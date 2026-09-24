@@ -1,89 +1,137 @@
-// ================================
-// RAKESH BARAIYA BUSINESS DASHBOARD
-// ================================
+const SUPABASE_URL = "https://bgakkkbavdtcndylpwgd.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_fcs7MDIxJomgpkkuHLH1eg_Zt_UcHMh1";
 
-let customers = JSON.parse(
-  localStorage.getItem("rakeshCustomers") || "[]"
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
 );
 
+let customers = [];
 let selectedPackageMonths = 0;
+let loadingCustomers = false;
 
 
-// ---------------- LOGIN ----------------
+/* =========================================
+   START
+========================================= */
 
-// Demo login for now.
-// Real secure Supabase login will be added in the next stage.
+document.addEventListener("DOMContentLoaded", async function () {
+  document
+    .getElementById("customerForm")
+    .addEventListener("submit", saveCustomer);
 
-const DEMO_EMAIL = "admin@rakeshbaraiya.com";
-const DEMO_PASSWORD = "123456";
+  document
+    .getElementById("loginForm")
+    .addEventListener("submit", async function (event) {
+      event.preventDefault();
+      await login();
+    });
 
-function login() {
+  resetCustomerForm();
 
-  const email = document.getElementById("loginEmail").value.trim();
+  const sessionResult = await db.auth.getSession();
+
+  if (sessionResult.data.session) {
+    await showApp();
+  } else {
+    showLogin();
+  }
+
+  db.auth.onAuthStateChange(async function (event, session) {
+    if (session) {
+      await showApp();
+    } else {
+      showLogin();
+    }
+  });
+});
+
+
+/* =========================================
+   LOGIN
+========================================= */
+
+async function login() {
+  const email = document
+    .getElementById("loginEmail")
+    .value
+    .trim();
+
   const password = document.getElementById("loginPassword").value;
 
   const message = document.getElementById("loginMessage");
 
-  if (email === DEMO_EMAIL && password === DEMO_PASSWORD) {
+  message.textContent = "Signing in...";
+  message.style.color = "";
 
-    localStorage.setItem("rakeshLoggedIn", "true");
+  const result = await db.auth.signInWithPassword({
+    email: email,
+    password: password
+  });
 
-    message.textContent = "";
+  if (result.error) {
+    message.textContent =
+      result.error.message || "Invalid email or password.";
 
-    showApp();
-
-  } else {
-
-    message.textContent = "Invalid email or password.";
     message.style.color = "#d93025";
-
-  }
-}
-
-
-function logout() {
-
-  localStorage.removeItem("rakeshLoggedIn");
-
-  document.getElementById("appPage").classList.add("hidden");
-  document.getElementById("loginPage").classList.remove("hidden");
-
-}
-
-
-// ---------------- PAGE LOAD ----------------
-
-document.addEventListener("DOMContentLoaded", function () {
-
-  const loggedIn =
-    localStorage.getItem("rakeshLoggedIn") === "true";
-
-  if (loggedIn) {
-    showApp();
+    return;
   }
 
-  updateDashboard();
-  renderCustomers();
-
-});
-
-
-function showApp() {
-
-  document.getElementById("loginPage").classList.add("hidden");
-
-  document.getElementById("appPage").classList.remove("hidden");
-
-  updateDashboard();
-  renderCustomers();
-
+  message.textContent = "";
 }
 
 
-// ---------------- PAGE NAVIGATION ----------------
+/* =========================================
+   LOGOUT
+========================================= */
+
+async function logout() {
+  await db.auth.signOut();
+}
+
+
+/* =========================================
+   SHOW LOGIN
+========================================= */
+
+function showLogin() {
+  document
+    .getElementById("appPage")
+    .classList.add("hidden");
+
+  document
+    .getElementById("loginPage")
+    .classList.remove("hidden");
+}
+
+
+/* =========================================
+   SHOW APPLICATION
+========================================= */
+
+async function showApp() {
+  document
+    .getElementById("loginPage")
+    .classList.add("hidden");
+
+  document
+    .getElementById("appPage")
+    .classList.remove("hidden");
+
+  await loadCustomers();
+
+  updateDashboard();
+
+  renderCustomers();
+}
+
+
+/* =========================================
+   PAGE NAVIGATION
+========================================= */
 
 function showPage(pageId) {
-
   const dashboardPage =
     document.getElementById("dashboardPage");
 
@@ -91,24 +139,37 @@ function showPage(pageId) {
     document.getElementById("customerPage");
 
   if (pageId === "customerPage") {
-
     dashboardPage.classList.add("hidden");
     customerPage.classList.remove("hidden");
-
   } else {
-
     customerPage.classList.add("hidden");
     dashboardPage.classList.remove("hidden");
-
   }
-
 }
 
 
-// ---------------- PACKAGE ----------------
+/* =========================================
+   NEW CUSTOMER
+========================================= */
+
+function openNewCustomer() {
+  resetCustomerForm();
+
+  document.getElementById("customerFormTitle").textContent =
+    "New Customer";
+
+  document.getElementById("saveCustomerBtn").textContent =
+    "Save Customer";
+
+  showPage("customerPage");
+}
+
+
+/* =========================================
+   PACKAGE SELECTION
+========================================= */
 
 function selectPackage(packageName, price, months) {
-
   document.getElementById("selectedPackage").value =
     packageName;
 
@@ -118,150 +179,281 @@ function selectPackage(packageName, price, months) {
   selectedPackageMonths = months;
 
   if (months === 3) {
-
     document.getElementById("validity").value =
       "3 Months";
-
   } else if (months === 6) {
-
     document.getElementById("validity").value =
       "6 Months";
-
   } else if (months === 12) {
-
     document.getElementById("validity").value =
       "1 Year";
-
   } else {
-
     document.getElementById("validity").value =
       "Custom";
+  }
+}
 
+
+/* =========================================
+   LOAD CUSTOMERS FROM SUPABASE
+========================================= */
+
+async function loadCustomers() {
+  if (loadingCustomers) {
+    return;
   }
 
+  loadingCustomers = true;
+
+  const result = await db
+    .from("customers")
+    .select("*")
+    .order("created_at", {
+      ascending: false
+    });
+
+  loadingCustomers = false;
+
+  if (result.error) {
+    console.error(result.error);
+
+    alert(
+      "Customer data load failed: " +
+      result.error.message
+    );
+
+    customers = [];
+
+    return;
+  }
+
+  customers = result.data || [];
 }
 
 
-// ---------------- SAVE CUSTOMER ----------------
+/* =========================================
+   SAVE / UPDATE CUSTOMER
+========================================= */
 
-document
-  .getElementById("customerForm")
-  .addEventListener("submit", function (event) {
+async function saveCustomer(event) {
+  event.preventDefault();
 
-    event.preventDefault();
+  const name = document
+    .getElementById("customerName")
+    .value
+    .trim();
 
-    const name =
-      document.getElementById("customerName").value.trim();
+  const mobile = document
+    .getElementById("customerMobile")
+    .value
+    .trim();
 
-    const mobile =
-      document.getElementById("customerMobile").value.trim();
+  const repositoryId = document
+    .getElementById("repositoryId")
+    .value
+    .trim();
 
-    const repositoryId =
-      document.getElementById("repositoryId").value.trim();
+  const email = document
+    .getElementById("customerEmail")
+    .value
+    .trim();
 
-    const email =
-      document.getElementById("customerEmail").value.trim();
+  const packageName = document
+    .getElementById("selectedPackage")
+    .value
+    .trim();
 
-    const packageName =
-      document.getElementById("selectedPackage").value;
+  const payment =
+    Number(
+      document.getElementById("totalPaymentInput").value
+    ) || 0;
 
-    const payment =
-      Number(
-        document.getElementById("totalPaymentInput").value
-      ) || 0;
+  const startDate =
+    document.getElementById("startDate").value;
 
-    const startDate =
-      document.getElementById("startDate").value;
+  const validity =
+    document.getElementById("validity").value.trim();
 
-    const validity =
-      document.getElementById("validity").value;
-
-
-    if (!name || !mobile) {
-
-      alert("Please enter customer name and mobile number.");
-
-      return;
-    }
-
-
-    if (!packageName) {
-
-      alert("Please select a package.");
-
-      return;
-    }
+  const editingId =
+    document.getElementById("editingCustomerId").value;
 
 
-    const customer = {
+  /* VALIDATION */
 
-      id: Date.now(),
+  if (!name || !mobile) {
+    alert(
+      "Please enter customer name and mobile number."
+    );
 
-      name: name,
+    return;
+  }
 
-      mobile: mobile,
+  if (!packageName) {
+    alert("Please select a package.");
 
-      repositoryId: repositoryId,
+    return;
+  }
 
-      email: email,
+  if (!startDate) {
+    alert("Please select start date.");
 
-      package: packageName,
-
-      payment: payment,
-
-      startDate: startDate,
-
-      validity: validity,
-
-      createdAt: new Date().toISOString()
-
-    };
+    return;
+  }
 
 
-    customers.push(customer);
+  /* DATA */
 
-    saveCustomers();
-
-    alert("Customer saved successfully!");
-
-
-    document
-      .getElementById("customerForm")
-      .reset();
-
-    selectedPackageMonths = 0;
-
-    showPage("dashboardPage");
-
-    updateDashboard();
-    renderCustomers();
-
-  });
+  const payload = {
+    name: name,
+    mobile: mobile,
+    repository_id: repositoryId || null,
+    email: email || null,
+    package: packageName,
+    total_payment: payment,
+    start_date: startDate,
+    validity: validity || null,
+    updated_at: new Date().toISOString()
+  };
 
 
-// ---------------- LOCAL STORAGE ----------------
+  /* BUTTON */
 
-function saveCustomers() {
+  const button =
+    document.getElementById("saveCustomerBtn");
 
-  localStorage.setItem(
-    "rakeshCustomers",
-    JSON.stringify(customers)
+  button.disabled = true;
+
+  button.textContent =
+    editingId ? "Updating..." : "Saving...";
+
+
+  /* DATABASE */
+
+  let result;
+
+  if (editingId) {
+    result = await db
+      .from("customers")
+      .update(payload)
+      .eq("id", editingId);
+  } else {
+    result = await db
+      .from("customers")
+      .insert(payload);
+  }
+
+
+  /* ENABLE BUTTON */
+
+  button.disabled = false;
+
+  button.textContent =
+    editingId
+      ? "Update Customer"
+      : "Save Customer";
+
+
+  /* ERROR */
+
+  if (result.error) {
+    console.error(result.error);
+
+    alert(
+      "Could not save customer: " +
+      result.error.message
+    );
+
+    return;
+  }
+
+
+  /* SUCCESS */
+
+  alert(
+    editingId
+      ? "Customer updated successfully!"
+      : "Customer saved successfully!"
   );
 
+
+  resetCustomerForm();
+
+  await loadCustomers();
+
+  updateDashboard();
+
+  renderCustomers();
+
+  showPage("dashboardPage");
 }
 
 
-// ---------------- DASHBOARD ----------------
+/* =========================================
+   RESET CUSTOMER FORM
+========================================= */
+
+function resetCustomerForm() {
+  const form =
+    document.getElementById("customerForm");
+
+  if (form) {
+    form.reset();
+  }
+
+  document.getElementById(
+    "editingCustomerId"
+  ).value = "";
+
+  document.getElementById(
+    "customerFormTitle"
+  ).textContent = "New Customer";
+
+  document.getElementById(
+    "saveCustomerBtn"
+  ).textContent = "Save Customer";
+
+  document.getElementById(
+    "selectedPackage"
+  ).value = "";
+
+  document.getElementById(
+    "validity"
+  ).value = "";
+
+
+  /* TODAY */
+
+  const today =
+    new Date()
+      .toISOString()
+      .split("T")[0];
+
+  document.getElementById(
+    "startDate"
+  ).value = today;
+
+  selectedPackageMonths = 0;
+}
+
+
+/* =========================================
+   DASHBOARD
+========================================= */
 
 function updateDashboard() {
-
   const totalCustomers =
     customers.length;
 
   const totalPayment =
     customers.reduce(
-      (sum, customer) =>
-        sum + Number(customer.payment || 0),
+      function (sum, customer) {
+        return (
+          sum +
+          Number(
+            customer.total_payment || 0
+          )
+        );
+      },
       0
     );
 
@@ -271,65 +463,80 @@ function updateDashboard() {
 
 
   customers.forEach(function (customer) {
-
     if (isCustomerExpired(customer)) {
-
       expired++;
-
     } else {
-
       active++;
-
     }
-
   });
 
 
-  document.getElementById("totalCustomers").textContent =
-    totalCustomers;
+  document.getElementById(
+    "totalCustomers"
+  ).textContent = totalCustomers;
 
-  document.getElementById("totalPayment").textContent =
+
+  document.getElementById(
+    "totalPayment"
+  ).textContent =
     formatCurrency(totalPayment);
 
-  document.getElementById("activePackages").textContent =
-    active;
 
-  document.getElementById("expiredPackages").textContent =
-    expired;
+  document.getElementById(
+    "activePackages"
+  ).textContent = active;
 
+
+  document.getElementById(
+    "expiredPackages"
+  ).textContent = expired;
 }
 
 
-// ---------------- EXPIRY CHECK ----------------
+/* =========================================
+   PACKAGE MONTHS
+========================================= */
+
+function getPackageMonths(packageName) {
+  if (packageName === "Silver") {
+    return 3;
+  }
+
+  if (packageName === "Gold") {
+    return 6;
+  }
+
+  if (packageName === "Platinum") {
+    return 12;
+  }
+
+  return 0;
+}
+
+
+/* =========================================
+   CHECK EXPIRY
+========================================= */
 
 function isCustomerExpired(customer) {
+  const months =
+    getPackageMonths(
+      customer.package
+    );
 
-  if (!customer.startDate) {
+  if (
+    !months ||
+    !customer.start_date
+  ) {
     return false;
   }
+
 
   const start =
-    new Date(customer.startDate);
-
-  let months = 0;
-
-  if (customer.package === "Silver") {
-
-    months = 3;
-
-  } else if (customer.package === "Gold") {
-
-    months = 6;
-
-  } else if (customer.package === "Platinum") {
-
-    months = 12;
-
-  } else {
-
-    return false;
-
-  }
+    new Date(
+      customer.start_date +
+      "T00:00:00"
+    );
 
 
   const expiry =
@@ -341,36 +548,61 @@ function isCustomerExpired(customer) {
 
 
   return new Date() > expiry;
-
 }
 
 
-// ---------------- CUSTOMER HISTORY ----------------
+/* =========================================
+   RENDER CUSTOMER TABLE
+========================================= */
 
-function renderCustomers(list = customers) {
-
+function renderCustomers(list) {
   const tbody =
-    document.getElementById("customerTableBody");
+    document.getElementById(
+      "customerTableBody"
+    );
 
   tbody.innerHTML = "";
 
 
-  if (list.length === 0) {
+  const rows =
+    list || customers;
 
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="6" style="text-align:center;padding:30px;">
-          No customer records found.
-        </td>
-      </tr>
-    `;
+
+  /* EMPTY */
+
+  if (rows.length === 0) {
+    const emptyRow =
+      document.createElement("tr");
+
+    const emptyCell =
+      document.createElement("td");
+
+    emptyCell.colSpan = 6;
+
+    emptyCell.style.textAlign =
+      "center";
+
+    emptyCell.style.padding =
+      "30px";
+
+    emptyCell.textContent =
+      "No customer records found.";
+
+    emptyRow.appendChild(
+      emptyCell
+    );
+
+    tbody.appendChild(
+      emptyRow
+    );
 
     return;
   }
 
 
-  list.forEach(function (customer) {
+  /* CUSTOMER ROWS */
 
+  rows.forEach(function (customer) {
     const expired =
       isCustomerExpired(customer);
 
@@ -379,126 +611,275 @@ function renderCustomers(list = customers) {
       document.createElement("tr");
 
 
-    row.innerHTML = `
+    /* NAME */
 
-      <td>
-        <strong>${escapeHTML(customer.name)}</strong>
-      </td>
+    const nameCell =
+      document.createElement("td");
 
-      <td>
-        ${escapeHTML(customer.mobile)}
-      </td>
+    const nameStrong =
+      document.createElement("strong");
 
-      <td>
-        ${escapeHTML(customer.package)}
-      </td>
+    nameStrong.textContent =
+      customer.name || "";
 
-      <td>
-        ${formatCurrency(customer.payment)}
-      </td>
-
-      <td>
-        <span style="
-          color:${expired ? "#d93025" : "#16834b"};
-          font-weight:600;
-        ">
-          ${expired ? "Expired" : "Active"}
-        </span>
-      </td>
-
-      <td>
-
-        <button
-          class="action-btn edit-btn"
-          onclick="editCustomer(${customer.id})">
-          Edit
-        </button>
-
-        <button
-          class="action-btn delete-btn"
-          onclick="deleteCustomer(${customer.id})">
-          Delete
-        </button>
-
-      </td>
-
-    `;
+    nameCell.appendChild(
+      nameStrong
+    );
 
 
-    tbody.appendChild(row);
+    /* MOBILE */
 
+    const mobileCell =
+      document.createElement("td");
+
+    mobileCell.textContent =
+      customer.mobile || "";
+
+
+    /* PACKAGE */
+
+    const packageCell =
+      document.createElement("td");
+
+    packageCell.textContent =
+      customer.package || "";
+
+
+    /* PAYMENT */
+
+    const paymentCell =
+      document.createElement("td");
+
+    paymentCell.textContent =
+      formatCurrency(
+        customer.total_payment
+      );
+
+
+    /* STATUS */
+
+    const statusCell =
+      document.createElement("td");
+
+    const statusSpan =
+      document.createElement("span");
+
+    statusSpan.textContent =
+      expired
+        ? "Expired"
+        : "Active";
+
+    statusSpan.style.color =
+      expired
+        ? "#d93025"
+        : "#16834b";
+
+    statusSpan.style.fontWeight =
+      "600";
+
+    statusCell.appendChild(
+      statusSpan
+    );
+
+
+    /* ACTIONS */
+
+    const actionCell =
+      document.createElement("td");
+
+
+    /* EDIT */
+
+    const editBtn =
+      document.createElement("button");
+
+    editBtn.className =
+      "action-btn edit-btn";
+
+    editBtn.textContent =
+      "Edit";
+
+    editBtn.onclick =
+      function () {
+        editCustomer(
+          customer.id
+        );
+      };
+
+
+    /* DELETE */
+
+    const deleteBtn =
+      document.createElement("button");
+
+    deleteBtn.className =
+      "action-btn delete-btn";
+
+    deleteBtn.textContent =
+      "Delete";
+
+    deleteBtn.onclick =
+      function () {
+        deleteCustomer(
+          customer.id
+        );
+      };
+
+
+    /* PDF */
+
+    const pdfBtn =
+      document.createElement("button");
+
+    pdfBtn.className =
+      "action-btn";
+
+    pdfBtn.textContent =
+      "PDF";
+
+    pdfBtn.onclick =
+      function () {
+        generateCustomerPDF(
+          customer.id
+        );
+      };
+
+
+    actionCell.appendChild(
+      editBtn
+    );
+
+    actionCell.appendChild(
+      deleteBtn
+    );
+
+    actionCell.appendChild(
+      pdfBtn
+    );
+
+
+    /* ROW */
+
+    row.appendChild(
+      nameCell
+    );
+
+    row.appendChild(
+      mobileCell
+    );
+
+    row.appendChild(
+      packageCell
+    );
+
+    row.appendChild(
+      paymentCell
+    );
+
+    row.appendChild(
+      statusCell
+    );
+
+    row.appendChild(
+      actionCell
+    );
+
+
+    tbody.appendChild(
+      row
+    );
   });
-
 }
 
 
-// ---------------- SEARCH ----------------
+/* =========================================
+   SEARCH CUSTOMERS
+========================================= */
 
 function searchCustomers() {
-
   const search =
     document
-      .getElementById("searchCustomer")
+      .getElementById(
+        "searchCustomer"
+      )
       .value
       .toLowerCase()
       .trim();
 
 
   if (!search) {
-
-    renderCustomers(customers);
+    renderCustomers(
+      customers
+    );
 
     return;
   }
 
 
   const filtered =
-    customers.filter(function (customer) {
+    customers.filter(
+      function (customer) {
 
-      return (
+        return (
+          String(
+            customer.name || ""
+          )
+            .toLowerCase()
+            .includes(search)
 
-        customer.name
-          .toLowerCase()
-          .includes(search)
+          ||
 
-        ||
+          String(
+            customer.mobile || ""
+          )
+            .toLowerCase()
+            .includes(search)
 
-        customer.mobile
-          .toLowerCase()
-          .includes(search)
+          ||
 
-        ||
+          String(
+            customer.package || ""
+          )
+            .toLowerCase()
+            .includes(search)
 
-        customer.package
-          .toLowerCase()
-          .includes(search)
+          ||
 
-        ||
+          String(
+            customer.repository_id || ""
+          )
+            .toLowerCase()
+            .includes(search)
 
-        (customer.repositoryId || "")
-          .toLowerCase()
-          .includes(search)
+          ||
 
-      );
+          String(
+            customer.email || ""
+          )
+            .toLowerCase()
+            .includes(search)
+        );
+      }
+    );
 
-    });
 
-
-  renderCustomers(filtered);
-
+  renderCustomers(
+    filtered
+  );
 }
 
 
-// ---------------- EDIT CUSTOMER ----------------
+/* =========================================
+   EDIT CUSTOMER
+========================================= */
 
 function editCustomer(id) {
-
   const customer =
-    customers.find(function (item) {
-
-      return item.id === id;
-
-    });
+    customers.find(
+      function (item) {
+        return item.id === id;
+      }
+    );
 
 
   if (!customer) {
@@ -506,55 +887,94 @@ function editCustomer(id) {
   }
 
 
-  document.getElementById("customerName").value =
-    customer.name;
+  document.getElementById(
+    "editingCustomerId"
+  ).value = customer.id;
 
-  document.getElementById("customerMobile").value =
-    customer.mobile;
 
-  document.getElementById("repositoryId").value =
-    customer.repositoryId || "";
+  document.getElementById(
+    "customerName"
+  ).value =
+    customer.name || "";
 
-  document.getElementById("customerEmail").value =
+
+  document.getElementById(
+    "customerMobile"
+  ).value =
+    customer.mobile || "";
+
+
+  document.getElementById(
+    "repositoryId"
+  ).value =
+    customer.repository_id || "";
+
+
+  document.getElementById(
+    "customerEmail"
+  ).value =
     customer.email || "";
 
-  document.getElementById("selectedPackage").value =
-    customer.package;
 
-  document.getElementById("totalPaymentInput").value =
-    customer.payment;
+  document.getElementById(
+    "selectedPackage"
+  ).value =
+    customer.package || "";
 
-  document.getElementById("startDate").value =
-    customer.startDate || "";
 
-  document.getElementById("validity").value =
+  document.getElementById(
+    "totalPaymentInput"
+  ).value =
+    customer.total_payment ?? "";
+
+
+  document.getElementById(
+    "startDate"
+  ).value =
+    customer.start_date || "";
+
+
+  document.getElementById(
+    "validity"
+  ).value =
     customer.validity || "";
 
 
-  showPage("customerPage");
+  selectedPackageMonths =
+    getPackageMonths(
+      customer.package
+    );
 
 
-  // Remove old customer before saving edited version.
-  customers =
-    customers.filter(function (item) {
+  document.getElementById(
+    "customerFormTitle"
+  ).textContent =
+    "Edit Customer";
 
-      return item.id !== id;
 
-    });
+  document.getElementById(
+    "saveCustomerBtn"
+  ).textContent =
+    "Update Customer";
 
+
+  showPage(
+    "customerPage"
+  );
 }
 
 
-// ---------------- DELETE CUSTOMER ----------------
+/* =========================================
+   DELETE CUSTOMER
+========================================= */
 
-function deleteCustomer(id) {
-
+async function deleteCustomer(id) {
   const customer =
-    customers.find(function (item) {
-
-      return item.id === id;
-
-    });
+    customers.find(
+      function (item) {
+        return item.id === id;
+      }
+    );
 
 
   if (!customer) {
@@ -562,7 +982,7 @@ function deleteCustomer(id) {
   }
 
 
-  const confirmDelete =
+  const confirmed =
     confirm(
       "Delete customer " +
       customer.name +
@@ -570,48 +990,237 @@ function deleteCustomer(id) {
     );
 
 
-  if (!confirmDelete) {
+  if (!confirmed) {
     return;
   }
 
 
-  customers =
-    customers.filter(function (item) {
+  const result =
+    await db
+      .from("customers")
+      .delete()
+      .eq("id", id);
 
-      return item.id !== id;
 
-    });
+  if (result.error) {
+    console.error(
+      result.error
+    );
+
+    alert(
+      "Delete failed: " +
+      result.error.message
+    );
+
+    return;
+  }
 
 
-  saveCustomers();
+  await loadCustomers();
 
   updateDashboard();
 
   renderCustomers();
 
+
+  alert(
+    "Customer deleted successfully."
+  );
 }
 
 
-// ---------------- CURRENCY ----------------
+/* =========================================
+   GENERATE CUSTOMER PDF
+========================================= */
+
+function generateCustomerPDF(id) {
+  const customer =
+    customers.find(
+      function (item) {
+        return item.id === id;
+      }
+    );
+
+
+  if (!customer) {
+    return;
+  }
+
+
+  if (
+    !window.jspdf ||
+    !window.jspdf.jsPDF
+  ) {
+    alert(
+      "PDF library is still loading. Please try again."
+    );
+
+    return;
+  }
+
+
+  const jsPDF =
+    window.jspdf.jsPDF;
+
+  const doc =
+    new jsPDF();
+
+
+  /* TITLE */
+
+  doc.setFontSize(18);
+
+  doc.text(
+    "RAKESH BARAIYA",
+    20,
+    20
+  );
+
+
+  doc.setFontSize(12);
+
+  doc.text(
+    "Customer Record",
+    20,
+    30
+  );
+
+
+  /* CUSTOMER DATA */
+
+  const lines = [
+
+    [
+      "Customer Name",
+      customer.name || ""
+    ],
+
+    [
+      "Mobile No.",
+      customer.mobile || ""
+    ],
+
+    [
+      "Repository ID",
+      customer.repository_id || ""
+    ],
+
+    [
+      "Email ID",
+      customer.email || ""
+    ],
+
+    [
+      "Package",
+      customer.package || ""
+    ],
+
+    [
+      "Total Payment",
+      formatCurrency(
+        customer.total_payment
+      )
+    ],
+
+    [
+      "Start Date",
+      customer.start_date || ""
+    ],
+
+    [
+      "Validity",
+      customer.validity || ""
+    ],
+
+    [
+      "Status",
+      isCustomerExpired(
+        customer
+      )
+        ? "Expired"
+        : "Active"
+    ]
+  ];
+
+
+  let y = 45;
+
+
+  lines.forEach(
+    function (item) {
+
+      doc.setFont(
+        "helvetica",
+        "bold"
+      );
+
+      doc.text(
+        item[0] + ":",
+        20,
+        y
+      );
+
+
+      doc.setFont(
+        "helvetica",
+        "normal"
+      );
+
+      doc.text(
+        String(item[1]),
+        70,
+        y
+      );
+
+
+      y += 10;
+    }
+  );
+
+
+  /* FOOTER */
+
+  doc.setFontSize(9);
+
+  doc.text(
+    "Generated from RAKESH BARAIYA Business Dashboard",
+    20,
+    285
+  );
+
+
+  /* FILE NAME */
+
+  const safeName =
+    String(
+      customer.name ||
+      "customer"
+    )
+      .replace(
+        /[^a-z0-9_-]/gi,
+        "_"
+      );
+
+
+  doc.save(
+    "customer-" +
+    safeName +
+    ".pdf"
+  );
+}
+
+
+/* =========================================
+   CURRENCY
+========================================= */
 
 function formatCurrency(amount) {
-
-  return "₹" +
-    Number(amount || 0)
-      .toLocaleString("en-IN");
-
-}
-
-
-// ---------------- SECURITY HELPER ----------------
-
-function escapeHTML(value) {
-
-  return String(value || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-
+  return (
+    "₹" +
+    Number(
+      amount || 0
+    ).toLocaleString(
+      "en-IN"
+    )
+  );
 }
