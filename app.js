@@ -1,316 +1,778 @@
-const SUPABASE_URL = "https://bgakkkbavdtcndylpwgd.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY =
-  "sb_publishable_fcs7MDIxJomgpkkuHLH1eg_Zt_UcHMh";
-
-const DEMO_EMAIL = "softwearenjiniear@gmail.com";
-const DEMO_PASSWORD = "rakesh@2007";
-
-const db = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY
-);
-
-let customers = [];
-let selectedPackageMonths = 0;
-let loadingCustomers = false;
-
-document.addEventListener("DOMContentLoaded", async function () {
-
-  document
-    .getElementById("customerForm")
-    .addEventListener("submit", saveCustomer);
-
-  document
-    .getElementById("loginForm")
-    .addEventListener("submit", function (event) {
-      event.preventDefault();
-      login();
-    });
-
-  resetCustomerForm();
-
-  // Check local login session
-  if (sessionStorage.getItem("rakeshLoggedIn") === "true") {
-    await showApp();
-  } else {
-    showLogin();
-  }
-});
+/* =========================================================
+   RAKESH BARAIYA
+   BUSINESS MANAGEMENT DASHBOARD
+   ========================================================= */
 
 
 /* =========================
-   LOGIN
+   SUPABASE CONFIGURATION
 ========================= */
 
-async function login() {
+const SUPABASE_URL =
+  "https://bgakkkbavdtcndylpwgd.supabase.co";
 
-  const email = document
-    .getElementById("loginEmail")
-    .value
-    .trim();
+const SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_fcs7MDIxJomgpkkuHLH1eg_Zt_UcHMh";
 
-  const password =
-    document.getElementById("loginPassword").value;
+
+/* =========================
+   DEMO LOGIN
+========================= */
+
+const DEMO_EMAIL =
+  "softwearenjiniear@gmail.com";
+
+const DEMO_PASSWORD =
+  "rakesh@2007";
+
+
+/* =========================
+   SUPABASE CLIENT
+========================= */
+
+const db =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+
+
+/* =========================
+   GLOBAL VARIABLES
+========================= */
+
+let customers = [];
+
+let selectedPackageMonths = 0;
+
+let loadingCustomers = false;
+
+
+/* =========================================================
+   PAGE INITIALIZATION
+========================================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function () {
+
+    const customerForm =
+      document.getElementById(
+        "customerForm"
+      );
+
+    if (customerForm) {
+
+      customerForm.addEventListener(
+        "submit",
+        saveCustomer
+      );
+
+    }
+
+
+    const loginForm =
+      document.getElementById(
+        "loginForm"
+      );
+
+    if (loginForm) {
+
+      loginForm.addEventListener(
+        "submit",
+        function (event) {
+
+          event.preventDefault();
+
+          login();
+
+        }
+      );
+
+    }
+
+
+    resetCustomerForm();
+
+
+    /* =========================
+       CHECK LOGIN SESSION
+    ========================= */
+
+    if (
+      sessionStorage.getItem(
+        "rakeshLoggedIn"
+      ) === "true"
+    ) {
+
+      showApp();
+
+    } else {
+
+      showLogin();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+function login() {
+
+  const emailInput =
+    document.getElementById(
+      "loginEmail"
+    );
+
+  const passwordInput =
+    document.getElementById(
+      "loginPassword"
+    );
 
   const message =
-    document.getElementById("loginMessage");
+    document.getElementById(
+      "loginMessage"
+    );
 
-  if (email !== DEMO_EMAIL || password !== DEMO_PASSWORD) {
 
-    message.textContent = "Invalid email or password.";
-    message.style.color = "#d93025";
+  if (!emailInput || !passwordInput) {
 
     return;
+
   }
 
-  // Save login session
-  sessionStorage.setItem("rakeshLoggedIn", "true");
 
-  message.textContent = "";
+  const email =
+    emailInput.value
+      .trim()
+      .toLowerCase();
 
-  await showApp();
+  const password =
+    passwordInput.value;
+
+
+  /* =========================
+     CHECK LOGIN
+  ========================= */
+
+  if (
+    email !==
+      DEMO_EMAIL.toLowerCase() ||
+    password !==
+      DEMO_PASSWORD
+  ) {
+
+    if (message) {
+
+      message.textContent =
+        "Invalid email or password.";
+
+      message.style.color =
+        "#d93025";
+
+    }
+
+    return;
+
+  }
+
+
+  /* =========================
+     LOGIN SUCCESS
+  ========================= */
+
+  sessionStorage.setItem(
+    "rakeshLoggedIn",
+    "true"
+  );
+
+
+  if (message) {
+
+    message.textContent =
+      "Login successful.";
+
+    message.style.color =
+      "#188038";
+
+  }
+
+
+  /* =========================
+     OPEN DASHBOARD
+  ========================= */
+
+  showApp();
+
 }
 
+
+/* =========================================================
+   LOGOUT
+========================================================= */
 
 function logout() {
 
-  sessionStorage.removeItem("rakeshLoggedIn");
+  sessionStorage.removeItem(
+    "rakeshLoggedIn"
+  );
+
 
   customers = [];
 
+
   showLogin();
+
 }
 
+
+/* =========================================================
+   SHOW LOGIN PAGE
+========================================================= */
 
 function showLogin() {
 
-  document
-    .getElementById("appPage")
-    .classList.add("hidden");
+  const loginPage =
+    document.getElementById(
+      "loginPage"
+    );
 
-  document
-    .getElementById("loginPage")
-    .classList.remove("hidden");
+  const appPage =
+    document.getElementById(
+      "appPage"
+    );
+
+
+  if (appPage) {
+
+    appPage.classList.add(
+      "hidden"
+    );
+
+  }
+
+
+  if (loginPage) {
+
+    loginPage.classList.remove(
+      "hidden"
+    );
+
+  }
+
 
   const email =
-    document.getElementById("loginEmail");
+    document.getElementById(
+      "loginEmail"
+    );
 
   const password =
-    document.getElementById("loginPassword");
+    document.getElementById(
+      "loginPassword"
+    );
 
-  if (email) email.value = "";
-  if (password) password.value = "";
+  const message =
+    document.getElementById(
+      "loginMessage"
+    );
+
+
+  if (email) {
+
+    email.value = "";
+
+  }
+
+
+  if (password) {
+
+    password.value = "";
+
+  }
+
+
+  if (message) {
+
+    message.textContent = "";
+
+  }
+
 }
 
 
-async function showApp() {
+/* =========================================================
+   SHOW MAIN APPLICATION
+========================================================= */
 
-  document
-    .getElementById("loginPage")
-    .classList.add("hidden");
+function showApp() {
 
-  document
-    .getElementById("appPage")
-    .classList.remove("hidden");
+  const loginPage =
+    document.getElementById(
+      "loginPage"
+    );
 
-  await loadCustomers();
+  const appPage =
+    document.getElementById(
+      "appPage"
+    );
+
+
+  if (loginPage) {
+
+    loginPage.classList.add(
+      "hidden"
+    );
+
+  }
+
+
+  if (appPage) {
+
+    appPage.classList.remove(
+      "hidden"
+    );
+
+  }
+
+
+  /* =========================
+     SHOW DASHBOARD FIRST
+  ========================= */
 
   updateDashboard();
 
   renderCustomers();
+
+
+  /* =========================
+     LOAD DATABASE SEPARATELY
+     
+     If Supabase fails,
+     Dashboard still stays open.
+  ========================= */
+
+  loadCustomers()
+    .then(function () {
+
+      updateDashboard();
+
+      renderCustomers();
+
+    })
+    .catch(function (error) {
+
+      console.error(
+        "Customer data load error:",
+        error
+      );
+
+    });
+
 }
 
 
-/* =========================
+/* =========================================================
    PAGE NAVIGATION
-========================= */
+========================================================= */
 
 function showPage(pageId) {
 
   const dashboardPage =
-    document.getElementById("dashboardPage");
+    document.getElementById(
+      "dashboardPage"
+    );
 
   const customerPage =
-    document.getElementById("customerPage");
+    document.getElementById(
+      "customerPage"
+    );
 
-  if (pageId === "customerPage") {
 
-    dashboardPage.classList.add("hidden");
-    customerPage.classList.remove("hidden");
+  if (
+    !dashboardPage ||
+    !customerPage
+  ) {
+
+    return;
+
+  }
+
+
+  if (
+    pageId ===
+    "customerPage"
+  ) {
+
+    dashboardPage.classList.add(
+      "hidden"
+    );
+
+    customerPage.classList.remove(
+      "hidden"
+    );
 
   } else {
 
-    customerPage.classList.add("hidden");
-    dashboardPage.classList.remove("hidden");
+    customerPage.classList.add(
+      "hidden"
+    );
+
+    dashboardPage.classList.remove(
+      "hidden"
+    );
+
   }
+
 }
 
+
+/* =========================================================
+   NEW CUSTOMER
+========================================================= */
 
 function openNewCustomer() {
 
   resetCustomerForm();
 
-  document.getElementById("customerFormTitle").textContent =
-    "New Customer";
 
-  document.getElementById("saveCustomerBtn").textContent =
-    "Save Customer";
+  const title =
+    document.getElementById(
+      "customerFormTitle"
+    );
 
-  showPage("customerPage");
+  if (title) {
+
+    title.textContent =
+      "New Customer";
+
+  }
+
+
+  const button =
+    document.getElementById(
+      "saveCustomerBtn"
+    );
+
+  if (button) {
+
+    button.textContent =
+      "Save Customer";
+
+  }
+
+
+  showPage(
+    "customerPage"
+  );
+
 }
 
 
-/* =========================
-   PACKAGE
-========================= */
+/* =========================================================
+   PACKAGE SELECTION
+========================================================= */
 
-function selectPackage(packageName, price, months) {
+function selectPackage(
+  packageName,
+  price,
+  months
+) {
 
-  document.getElementById("selectedPackage").value =
-    packageName;
+  const packageInput =
+    document.getElementById(
+      "selectedPackage"
+    );
 
-  document.getElementById("totalPaymentInput").value =
-    price > 0 ? price : "";
+  const paymentInput =
+    document.getElementById(
+      "totalPaymentInput"
+    );
 
-  selectedPackageMonths = months;
+  const validityInput =
+    document.getElementById(
+      "validity"
+    );
+
+
+  if (packageInput) {
+
+    packageInput.value =
+      packageName;
+
+  }
+
+
+  if (paymentInput) {
+
+    paymentInput.value =
+      price > 0
+        ? price
+        : "";
+
+  }
+
+
+  selectedPackageMonths =
+    months;
+
+
+  if (!validityInput) {
+
+    return;
+
+  }
+
 
   if (months === 3) {
 
-    document.getElementById("validity").value =
+    validityInput.value =
       "3 Months";
 
-  } else if (months === 6) {
+  }
 
-    document.getElementById("validity").value =
+  else if (months === 6) {
+
+    validityInput.value =
       "6 Months";
 
-  } else if (months === 12) {
+  }
 
-    document.getElementById("validity").value =
+  else if (months === 12) {
+
+    validityInput.value =
       "1 Year";
 
-  } else {
-
-    document.getElementById("validity").value =
-      "Custom";
   }
+
+  else {
+
+    validityInput.value =
+      "Custom";
+
+  }
+
 }
 
 
-/* =========================
+/* =========================================================
    LOAD CUSTOMERS
-========================= */
+========================================================= */
 
 async function loadCustomers() {
 
-  if (loadingCustomers) return;
+  if (loadingCustomers) {
+
+    return;
+
+  }
+
 
   loadingCustomers = true;
 
-  const result = await db
-    .from("customers")
-    .select("*")
-    .order("created_at", {
-      ascending: false
-    });
 
-  loadingCustomers = false;
+  try {
 
-  if (result.error) {
+    const result =
+      await db
+        .from("customers")
+        .select("*")
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
+        );
 
-    console.error(result.error);
 
-    alert(
-      "Customer data load failed: " +
-      result.error.message
+    if (result.error) {
+
+      console.error(
+        "Supabase load error:",
+        result.error
+      );
+
+
+      customers = [];
+
+
+      return;
+
+    }
+
+
+    customers =
+      result.data || [];
+
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "Customer load exception:",
+      error
     );
+
 
     customers = [];
 
-    return;
   }
 
-  customers = result.data || [];
+  finally {
+
+    loadingCustomers = false;
+
+  }
+
 }
 
 
-/* =========================
+/* =========================================================
    SAVE CUSTOMER
-========================= */
+========================================================= */
 
-async function saveCustomer(event) {
+async function saveCustomer(
+  event
+) {
 
   event.preventDefault();
 
+
   const name =
-    document.getElementById("customerName")
-      .value.trim();
+    document
+      .getElementById(
+        "customerName"
+      )
+      .value
+      .trim();
+
 
   const mobile =
-    document.getElementById("customerMobile")
-      .value.trim();
+    document
+      .getElementById(
+        "customerMobile"
+      )
+      .value
+      .trim();
+
 
   const repositoryId =
-    document.getElementById("repositoryId")
-      .value.trim();
+    document
+      .getElementById(
+        "repositoryId"
+      )
+      .value
+      .trim();
+
 
   const email =
-    document.getElementById("customerEmail")
-      .value.trim();
+    document
+      .getElementById(
+        "customerEmail"
+      )
+      .value
+      .trim();
+
 
   const packageName =
-    document.getElementById("selectedPackage")
-      .value.trim();
+    document
+      .getElementById(
+        "selectedPackage"
+      )
+      .value
+      .trim();
+
 
   const payment =
     Number(
-      document.getElementById("totalPaymentInput")
+      document
+        .getElementById(
+          "totalPaymentInput"
+        )
         .value
     ) || 0;
 
+
   const startDate =
-    document.getElementById("startDate").value;
-
-  const validity =
-    document.getElementById("validity")
-      .value.trim();
-
-  const editingId =
-    document.getElementById("editingCustomerId")
+    document
+      .getElementById(
+        "startDate"
+      )
       .value;
 
 
-  if (!name || !mobile) {
+  const validity =
+    document
+      .getElementById(
+        "validity"
+      )
+      .value
+      .trim();
+
+
+  const editingId =
+    document
+      .getElementById(
+        "editingCustomerId"
+      )
+      .value;
+
+
+  /* =========================
+     VALIDATION
+  ========================= */
+
+  if (
+    !name ||
+    !mobile
+  ) {
 
     alert(
       "Please enter customer name and mobile number."
     );
 
     return;
+
   }
 
 
   if (!packageName) {
 
-    alert("Please select a package.");
+    alert(
+      "Please select a package."
+    );
 
     return;
+
   }
 
 
   if (!startDate) {
 
-    alert("Please select start date.");
+    alert(
+      "Please select start date."
+    );
 
     return;
+
   }
 
 
+  /* =========================
+     CUSTOMER DATA
+  ========================= */
+
   const payload = {
 
-    name: name,
+    name:
+      name,
 
-    mobile: mobile,
+    mobile:
+      mobile,
 
     repository_id:
       repositoryId || null,
@@ -332,113 +794,222 @@ async function saveCustomer(event) {
 
     updated_at:
       new Date().toISOString()
+
   };
 
 
   const button =
-    document.getElementById("saveCustomerBtn");
-
-  button.disabled = true;
-
-  button.textContent =
-    editingId
-      ? "Updating..."
-      : "Saving...";
-
-
-  let result;
-
-
-  if (editingId) {
-
-    result = await db
-      .from("customers")
-      .update(payload)
-      .eq("id", editingId);
-
-  } else {
-
-    result = await db
-      .from("customers")
-      .insert(payload);
-  }
-
-
-  button.disabled = false;
-
-  button.textContent =
-    editingId
-      ? "Update Customer"
-      : "Save Customer";
-
-
-  if (result.error) {
-
-    console.error(result.error);
-
-    alert(
-      "Could not save customer: " +
-      result.error.message
+    document.getElementById(
+      "saveCustomerBtn"
     );
 
-    return;
+
+  if (button) {
+
+    button.disabled = true;
+
+    button.textContent =
+      editingId
+        ? "Updating..."
+        : "Saving...";
+
   }
 
 
-  alert(
-    editingId
-      ? "Customer updated successfully!"
-      : "Customer saved successfully!"
-  );
+  try {
+
+    let result;
 
 
-  resetCustomerForm();
+    /* =========================
+       UPDATE
+    ========================= */
 
-  await loadCustomers();
+    if (editingId) {
 
-  updateDashboard();
+      result =
+        await db
+          .from("customers")
+          .update(payload)
+          .eq(
+            "id",
+            editingId
+          );
 
-  renderCustomers();
+    }
 
-  showPage("dashboardPage");
+
+    /* =========================
+       INSERT
+    ========================= */
+
+    else {
+
+      result =
+        await db
+          .from("customers")
+          .insert(
+            payload
+          );
+
+    }
+
+
+    if (result.error) {
+
+      console.error(
+        "Save error:",
+        result.error
+      );
+
+
+      alert(
+        "Could not save customer: " +
+        result.error.message
+      );
+
+
+      return;
+
+    }
+
+
+    alert(
+      editingId
+        ? "Customer updated successfully!"
+        : "Customer saved successfully!"
+    );
+
+
+    resetCustomerForm();
+
+
+    await loadCustomers();
+
+
+    updateDashboard();
+
+    renderCustomers();
+
+
+    showPage(
+      "dashboardPage"
+    );
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "Save exception:",
+      error
+    );
+
+
+    alert(
+      "Something went wrong while saving customer."
+    );
+
+  }
+
+  finally {
+
+    if (button) {
+
+      button.disabled =
+        false;
+
+      button.textContent =
+        editingId
+          ? "Update Customer"
+          : "Save Customer";
+
+    }
+
+  }
+
 }
 
 
-/* =========================
-   RESET FORM
-========================= */
+/* =========================================================
+   RESET CUSTOMER FORM
+========================================================= */
 
 function resetCustomerForm() {
 
   const form =
-    document.getElementById("customerForm");
-
-  if (form) form.reset();
-
-
-  document.getElementById(
-    "editingCustomerId"
-  ).value = "";
+    document.getElementById(
+      "customerForm"
+    );
 
 
-  document.getElementById(
-    "customerFormTitle"
-  ).textContent = "New Customer";
+  if (form) {
+
+    form.reset();
+
+  }
 
 
-  document.getElementById(
-    "saveCustomerBtn"
-  ).textContent = "Save Customer";
+  const editingId =
+    document.getElementById(
+      "editingCustomerId"
+    );
+
+  if (editingId) {
+
+    editingId.value = "";
+
+  }
 
 
-  document.getElementById(
-    "selectedPackage"
-  ).value = "";
+  const title =
+    document.getElementById(
+      "customerFormTitle"
+    );
+
+  if (title) {
+
+    title.textContent =
+      "New Customer";
+
+  }
 
 
-  document.getElementById(
-    "validity"
-  ).value = "";
+  const saveButton =
+    document.getElementById(
+      "saveCustomerBtn"
+    );
+
+  if (saveButton) {
+
+    saveButton.textContent =
+      "Save Customer";
+
+  }
+
+
+  const packageInput =
+    document.getElementById(
+      "selectedPackage"
+    );
+
+  if (packageInput) {
+
+    packageInput.value = "";
+
+  }
+
+
+  const validity =
+    document.getElementById(
+      "validity"
+    );
+
+  if (validity) {
+
+    validity.value = "";
+
+  }
 
 
   const today =
@@ -447,18 +1018,28 @@ function resetCustomerForm() {
       .split("T")[0];
 
 
-  document.getElementById(
-    "startDate"
-  ).value = today;
+  const startDate =
+    document.getElementById(
+      "startDate"
+    );
+
+  if (startDate) {
+
+    startDate.value =
+      today;
+
+  }
 
 
-  selectedPackageMonths = 0;
+  selectedPackageMonths =
+    0;
+
 }
 
 
-/* =========================
+/* =========================================================
    DASHBOARD
-========================= */
+========================================================= */
 
 function updateDashboard() {
 
@@ -467,16 +1048,23 @@ function updateDashboard() {
 
 
   const totalPayment =
-    customers.reduce(function (sum, customer) {
+    customers.reduce(
+      function (
+        sum,
+        customer
+      ) {
 
-      return (
-        sum +
-        Number(
-          customer.total_payment || 0
-        )
-      );
+        return (
+          sum +
+          Number(
+            customer.total_payment ||
+            0
+          )
+        );
 
-    }, 0);
+      },
+      0
+    );
 
 
   let active = 0;
@@ -484,65 +1072,136 @@ function updateDashboard() {
   let expired = 0;
 
 
-  customers.forEach(function (customer) {
+  customers.forEach(
+    function (customer) {
 
-    if (isCustomerExpired(customer)) {
+      if (
+        isCustomerExpired(
+          customer
+        )
+      ) {
 
-      expired++;
+        expired++;
 
-    } else {
+      }
 
-      active++;
+      else {
+
+        active++;
+
+      }
+
     }
-
-  });
-
-
-  document.getElementById(
-    "totalCustomers"
-  ).textContent =
-    totalCustomers;
+  );
 
 
-  document.getElementById(
-    "totalPayment"
-  ).textContent =
-    formatCurrency(totalPayment);
+  const totalCustomersElement =
+    document.getElementById(
+      "totalCustomers"
+    );
+
+  const totalPaymentElement =
+    document.getElementById(
+      "totalPayment"
+    );
+
+  const activeElement =
+    document.getElementById(
+      "activePackages"
+    );
+
+  const expiredElement =
+    document.getElementById(
+      "expiredPackages"
+    );
 
 
-  document.getElementById(
-    "activePackages"
-  ).textContent =
-    active;
+  if (totalCustomersElement) {
+
+    totalCustomersElement.textContent =
+      totalCustomers;
+
+  }
 
 
-  document.getElementById(
-    "expiredPackages"
-  ).textContent =
-    expired;
+  if (totalPaymentElement) {
+
+    totalPaymentElement.textContent =
+      formatCurrency(
+        totalPayment
+      );
+
+  }
+
+
+  if (activeElement) {
+
+    activeElement.textContent =
+      active;
+
+  }
+
+
+  if (expiredElement) {
+
+    expiredElement.textContent =
+      expired;
+
+  }
+
 }
 
 
-/* =========================
-   PACKAGE VALIDITY
-========================= */
+/* =========================================================
+   PACKAGE MONTHS
+========================================================= */
 
-function getPackageMonths(packageName) {
+function getPackageMonths(
+  packageName
+) {
 
-  if (packageName === "Silver")
+  if (
+    packageName ===
+    "Silver"
+  ) {
+
     return 3;
 
-  if (packageName === "Gold")
+  }
+
+
+  if (
+    packageName ===
+    "Gold"
+  ) {
+
     return 6;
 
-  if (packageName === "Platinum")
+  }
+
+
+  if (
+    packageName ===
+    "Platinum"
+  ) {
+
     return 12;
 
+  }
+
+
   return 0;
+
 }
 
 
-function isCustomerExpired(customer) {
+/* =========================================================
+   CHECK EXPIRY
+========================================================= */
+
+function isCustomerExpired(
+  customer
+) {
 
   const months =
     getPackageMonths(
@@ -556,6 +1215,7 @@ function isCustomerExpired(customer) {
   ) {
 
     return false;
+
   }
 
 
@@ -571,19 +1231,26 @@ function isCustomerExpired(customer) {
 
 
   expiry.setMonth(
-    expiry.getMonth() + months
+    expiry.getMonth() +
+    months
   );
 
 
-  return new Date() > expiry;
+  return (
+    new Date() >
+    expiry
+  );
+
 }
 
 
-/* =========================
+/* =========================================================
    CUSTOMER TABLE
-========================= */
+========================================================= */
 
-function renderCustomers(list) {
+function renderCustomers(
+  list
+) {
 
   const tbody =
     document.getElementById(
@@ -591,30 +1258,52 @@ function renderCustomers(list) {
     );
 
 
-  tbody.innerHTML = "";
+  if (!tbody) {
+
+    return;
+
+  }
+
+
+  tbody.innerHTML =
+    "";
 
 
   const rows =
     list || customers;
 
 
-  if (rows.length === 0) {
+  /* =========================
+     EMPTY
+  ========================= */
+
+  if (
+    rows.length === 0
+  ) {
 
     const emptyRow =
-      document.createElement("tr");
+      document.createElement(
+        "tr"
+      );
 
 
     const emptyCell =
-      document.createElement("td");
+      document.createElement(
+        "td"
+      );
 
 
-    emptyCell.colSpan = 6;
+    emptyCell.colSpan =
+      6;
+
 
     emptyCell.style.textAlign =
       "center";
 
+
     emptyCell.style.padding =
       "30px";
+
 
     emptyCell.textContent =
       "No customer records found.";
@@ -631,220 +1320,284 @@ function renderCustomers(list) {
 
 
     return;
+
   }
 
 
-  rows.forEach(function (customer) {
+  /* =========================
+     CUSTOMER ROWS
+  ========================= */
 
-    const expired =
-      isCustomerExpired(customer);
+  rows.forEach(
+    function (customer) {
 
-
-    const row =
-      document.createElement("tr");
-
-
-    const nameCell =
-      document.createElement("td");
-
-
-    const nameStrong =
-      document.createElement("strong");
+      const expired =
+        isCustomerExpired(
+          customer
+        );
 
 
-    nameStrong.textContent =
-      customer.name || "";
+      const row =
+        document.createElement(
+          "tr"
+        );
 
 
-    nameCell.appendChild(
-      nameStrong
-    );
+      /* NAME */
+
+      const nameCell =
+        document.createElement(
+          "td"
+        );
 
 
-    const mobileCell =
-      document.createElement("td");
+      const nameStrong =
+        document.createElement(
+          "strong"
+        );
 
 
-    mobileCell.textContent =
-      customer.mobile || "";
+      nameStrong.textContent =
+        customer.name || "";
 
 
-    const packageCell =
-      document.createElement("td");
-
-
-    packageCell.textContent =
-      customer.package || "";
-
-
-    const paymentCell =
-      document.createElement("td");
-
-
-    paymentCell.textContent =
-      formatCurrency(
-        customer.total_payment
+      nameCell.appendChild(
+        nameStrong
       );
 
 
-    const statusCell =
-      document.createElement("td");
+      /* MOBILE */
 
-
-    const statusSpan =
-      document.createElement("span");
-
-
-    statusSpan.textContent =
-      expired
-        ? "Expired"
-        : "Active";
-
-
-    statusSpan.style.color =
-      expired
-        ? "#d93025"
-        : "#16834b";
-
-
-    statusSpan.style.fontWeight =
-      "600";
-
-
-    statusCell.appendChild(
-      statusSpan
-    );
-
-
-    const actionCell =
-      document.createElement("td");
-
-
-    const editBtn =
-      document.createElement("button");
-
-
-    editBtn.className =
-      "action-btn edit-btn";
-
-
-    editBtn.textContent =
-      "Edit";
-
-
-    editBtn.onclick =
-      function () {
-
-        editCustomer(
-          customer.id
+      const mobileCell =
+        document.createElement(
+          "td"
         );
 
-      };
+
+      mobileCell.textContent =
+        customer.mobile || "";
 
 
-    const deleteBtn =
-      document.createElement("button");
+      /* PACKAGE */
 
-
-    deleteBtn.className =
-      "action-btn delete-btn";
-
-
-    deleteBtn.textContent =
-      "Delete";
-
-
-    deleteBtn.onclick =
-      function () {
-
-        deleteCustomer(
-          customer.id
+      const packageCell =
+        document.createElement(
+          "td"
         );
 
-      };
+
+      packageCell.textContent =
+        customer.package || "";
 
 
-    const pdfBtn =
-      document.createElement("button");
+      /* PAYMENT */
 
-
-    pdfBtn.className =
-      "action-btn";
-
-
-    pdfBtn.textContent =
-      "PDF";
-
-
-    pdfBtn.onclick =
-      function () {
-
-        generateCustomerPDF(
-          customer.id
+      const paymentCell =
+        document.createElement(
+          "td"
         );
 
-      };
+
+      paymentCell.textContent =
+        formatCurrency(
+          customer.total_payment
+        );
 
 
-    actionCell.appendChild(
-      editBtn
-    );
+      /* STATUS */
 
-    actionCell.appendChild(
-      deleteBtn
-    );
-
-    actionCell.appendChild(
-      pdfBtn
-    );
+      const statusCell =
+        document.createElement(
+          "td"
+        );
 
 
-    row.appendChild(
-      nameCell
-    );
-
-    row.appendChild(
-      mobileCell
-    );
-
-    row.appendChild(
-      packageCell
-    );
-
-    row.appendChild(
-      paymentCell
-    );
-
-    row.appendChild(
-      statusCell
-    );
-
-    row.appendChild(
-      actionCell
-    );
+      const statusSpan =
+        document.createElement(
+          "span"
+        );
 
 
-    tbody.appendChild(
-      row
-    );
+      statusSpan.textContent =
+        expired
+          ? "Expired"
+          : "Active";
 
-  });
+
+      statusSpan.style.color =
+        expired
+          ? "#d93025"
+          : "#16834b";
+
+
+      statusSpan.style.fontWeight =
+        "600";
+
+
+      statusCell.appendChild(
+        statusSpan
+      );
+
+
+      /* ACTION */
+
+      const actionCell =
+        document.createElement(
+          "td"
+        );
+
+
+      /* EDIT BUTTON */
+
+      const editBtn =
+        document.createElement(
+          "button"
+        );
+
+
+      editBtn.className =
+        "action-btn edit-btn";
+
+
+      editBtn.textContent =
+        "Edit";
+
+
+      editBtn.onclick =
+        function () {
+
+          editCustomer(
+            customer.id
+          );
+
+        };
+
+
+      /* DELETE BUTTON */
+
+      const deleteBtn =
+        document.createElement(
+          "button"
+        );
+
+
+      deleteBtn.className =
+        "action-btn delete-btn";
+
+
+      deleteBtn.textContent =
+        "Delete";
+
+
+      deleteBtn.onclick =
+        function () {
+
+          deleteCustomer(
+            customer.id
+          );
+
+        };
+
+
+      /* PDF BUTTON */
+
+      const pdfBtn =
+        document.createElement(
+          "button"
+        );
+
+
+      pdfBtn.className =
+        "action-btn";
+
+
+      pdfBtn.textContent =
+        "PDF";
+
+
+      pdfBtn.onclick =
+        function () {
+
+          generateCustomerPDF(
+            customer.id
+          );
+
+        };
+
+
+      actionCell.appendChild(
+        editBtn
+      );
+
+      actionCell.appendChild(
+        deleteBtn
+      );
+
+      actionCell.appendChild(
+        pdfBtn
+      );
+
+
+      /* ADD CELLS */
+
+      row.appendChild(
+        nameCell
+      );
+
+      row.appendChild(
+        mobileCell
+      );
+
+      row.appendChild(
+        packageCell
+      );
+
+      row.appendChild(
+        paymentCell
+      );
+
+      row.appendChild(
+        statusCell
+      );
+
+      row.appendChild(
+        actionCell
+      );
+
+
+      tbody.appendChild(
+        row
+      );
+
+    }
+  );
+
 }
 
 
-/* =========================
+/* =========================================================
    SEARCH
-========================= */
+========================================================= */
 
 function searchCustomers() {
 
-  const search =
+  const searchInput =
     document.getElementById(
       "searchCustomer"
-    )
-    .value
-    .toLowerCase()
-    .trim();
+    );
+
+
+  if (!searchInput) {
+
+    return;
+
+  }
+
+
+  const search =
+    searchInput.value
+      .toLowerCase()
+      .trim();
 
 
   if (!search) {
@@ -854,6 +1607,7 @@ function searchCustomers() {
     );
 
     return;
+
   }
 
 
@@ -864,42 +1618,47 @@ function searchCustomers() {
         return (
 
           String(
-            customer.name || ""
+            customer.name ||
+            ""
           )
-          .toLowerCase()
-          .includes(search)
+            .toLowerCase()
+            .includes(search)
 
           ||
 
           String(
-            customer.mobile || ""
+            customer.mobile ||
+            ""
           )
-          .toLowerCase()
-          .includes(search)
+            .toLowerCase()
+            .includes(search)
 
           ||
 
           String(
-            customer.package || ""
+            customer.package ||
+            ""
           )
-          .toLowerCase()
-          .includes(search)
+            .toLowerCase()
+            .includes(search)
 
           ||
 
           String(
-            customer.repository_id || ""
+            customer.repository_id ||
+            ""
           )
-          .toLowerCase()
-          .includes(search)
+            .toLowerCase()
+            .includes(search)
 
           ||
 
           String(
-            customer.email || ""
+            customer.email ||
+            ""
           )
-          .toLowerCase()
-          .includes(search)
+            .toLowerCase()
+            .includes(search)
 
         );
 
@@ -910,26 +1669,35 @@ function searchCustomers() {
   renderCustomers(
     filtered
   );
+
 }
 
 
-/* =========================
-   EDIT
-========================= */
+/* =========================================================
+   EDIT CUSTOMER
+========================================================= */
 
-function editCustomer(id) {
+function editCustomer(
+  id
+) {
 
   const customer =
     customers.find(
       function (item) {
 
-        return item.id === id;
+        return (
+          item.id === id
+        );
 
       }
     );
 
 
-  if (!customer) return;
+  if (!customer) {
+
+    return;
+
+  }
 
 
   document.getElementById(
@@ -953,7 +1721,8 @@ function editCustomer(id) {
   document.getElementById(
     "repositoryId"
   ).value =
-    customer.repository_id || "";
+    customer.repository_id ||
+    "";
 
 
   document.getElementById(
@@ -971,7 +1740,8 @@ function editCustomer(id) {
   document.getElementById(
     "totalPaymentInput"
   ).value =
-    customer.total_payment ?? "";
+    customer.total_payment ??
+    "";
 
 
   document.getElementById(
@@ -1007,26 +1777,35 @@ function editCustomer(id) {
   showPage(
     "customerPage"
   );
+
 }
 
 
-/* =========================
-   DELETE
-========================= */
+/* =========================================================
+   DELETE CUSTOMER
+========================================================= */
 
-async function deleteCustomer(id) {
+async function deleteCustomer(
+  id
+) {
 
   const customer =
     customers.find(
       function (item) {
 
-        return item.id === id;
+        return (
+          item.id === id
+        );
 
       }
     );
 
 
-  if (!customer) return;
+  if (!customer) {
+
+    return;
+
+  }
 
 
   if (
@@ -1038,63 +1817,97 @@ async function deleteCustomer(id) {
   ) {
 
     return;
+
   }
 
 
-  const result =
-    await db
-      .from("customers")
-      .delete()
-      .eq("id", id);
+  try {
+
+    const result =
+      await db
+        .from("customers")
+        .delete()
+        .eq(
+          "id",
+          id
+        );
 
 
-  if (result.error) {
+    if (result.error) {
+
+      console.error(
+        "Delete error:",
+        result.error
+      );
+
+
+      alert(
+        "Delete failed: " +
+        result.error.message
+      );
+
+
+      return;
+
+    }
+
+
+    await loadCustomers();
+
+
+    updateDashboard();
+
+    renderCustomers();
+
+
+    alert(
+      "Customer deleted successfully."
+    );
+
+  }
+
+  catch (error) {
 
     console.error(
-      result.error
+      "Delete exception:",
+      error
     );
 
 
     alert(
-      "Delete failed: " +
-      result.error.message
+      "Something went wrong while deleting customer."
     );
 
-
-    return;
   }
 
-
-  await loadCustomers();
-
-  updateDashboard();
-
-  renderCustomers();
-
-
-  alert(
-    "Customer deleted successfully."
-  );
 }
 
 
-/* =========================
+/* =========================================================
    PDF
-========================= */
+========================================================= */
 
-function generateCustomerPDF(id) {
+function generateCustomerPDF(
+  id
+) {
 
   const customer =
     customers.find(
       function (item) {
 
-        return item.id === id;
+        return (
+          item.id === id
+        );
 
       }
     );
 
 
-  if (!customer) return;
+  if (!customer) {
+
+    return;
+
+  }
 
 
   if (
@@ -1107,6 +1920,7 @@ function generateCustomerPDF(id) {
     );
 
     return;
+
   }
 
 
@@ -1118,7 +1932,14 @@ function generateCustomerPDF(id) {
     new jsPDF();
 
 
-  doc.setFontSize(18);
+  /* =========================
+     HEADER
+  ========================= */
+
+  doc.setFontSize(
+    18
+  );
+
 
   doc.text(
     "RAKESH BARAIYA",
@@ -1127,7 +1948,10 @@ function generateCustomerPDF(id) {
   );
 
 
-  doc.setFontSize(12);
+  doc.setFontSize(
+    12
+  );
+
 
   doc.text(
     "Customer Record",
@@ -1135,6 +1959,10 @@ function generateCustomerPDF(id) {
     30
   );
 
+
+  /* =========================
+     CUSTOMER INFORMATION
+  ========================= */
 
   const lines = [
 
@@ -1182,7 +2010,9 @@ function generateCustomerPDF(id) {
 
     [
       "Status",
-      isCustomerExpired(customer)
+      isCustomerExpired(
+        customer
+      )
         ? "Expired"
         : "Active"
     ]
@@ -1190,7 +2020,8 @@ function generateCustomerPDF(id) {
   ];
 
 
-  let y = 45;
+  let y =
+    45;
 
 
   lines.forEach(
@@ -1216,19 +2047,28 @@ function generateCustomerPDF(id) {
 
 
       doc.text(
-        String(item[1]),
+        String(
+          item[1]
+        ),
         70,
         y
       );
 
 
-      y += 10;
+      y +=
+        10;
 
     }
   );
 
 
-  doc.setFontSize(9);
+  /* =========================
+     FOOTER
+  ========================= */
+
+  doc.setFontSize(
+    9
+  );
 
 
   doc.text(
@@ -1238,15 +2078,19 @@ function generateCustomerPDF(id) {
   );
 
 
+  /* =========================
+     FILE NAME
+  ========================= */
+
   const safeName =
     String(
       customer.name ||
       "customer"
     )
-    .replace(
-      /[^a-z0-9_-]/gi,
-      "_"
-    );
+      .replace(
+        /[^a-z0-9_-]/gi,
+        "_"
+      );
 
 
   doc.save(
@@ -1254,14 +2098,17 @@ function generateCustomerPDF(id) {
     safeName +
     ".pdf"
   );
+
 }
 
 
-/* =========================
+/* =========================================================
    CURRENCY
-========================= */
+========================================================= */
 
-function formatCurrency(amount) {
+function formatCurrency(
+  amount
+) {
 
   return (
     "₹" +
@@ -1271,4 +2118,5 @@ function formatCurrency(amount) {
       "en-IN"
     )
   );
+
 }
