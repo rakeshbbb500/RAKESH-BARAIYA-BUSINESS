@@ -1,0 +1,347 @@
+
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#123c80">
+  <title>Customer Feedback | Rakesh Business</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont,
+        "Noto Sans Gujarati", Arial, sans-serif;
+      background: #f1f5fb;
+      color: #172b4d;
+    }
+
+    .container {
+      max-width: 520px;
+      margin: 20px auto;
+    }
+
+    .header {
+      text-align: center;
+      background: linear-gradient(135deg, #123c80, #2876db);
+      color: white;
+      padding: 28px 18px;
+      border-radius: 20px 20px 0 0;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      margin: 0 0 8px;
+    }
+
+    .header p {
+      margin: 0;
+      opacity: 0.9;
+    }
+
+    .card {
+      background: white;
+      padding: 22px;
+      border-radius: 0 0 20px 20px;
+      box-shadow: 0 8px 28px #19365b12;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin: 16px 0 8px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #d4ddec;
+      border-radius: 10px;
+      font-size: 16px;
+      background: white;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .stars {
+      display: flex;
+      gap: 8px;
+      margin: 8px 0;
+    }
+
+    .star {
+      border: 0;
+      background: #edf1f7;
+      color: #8a96a8;
+      font-size: 32px;
+      border-radius: 10px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+
+    .star.active {
+      color: #f5a623;
+      background: #fff5dd;
+    }
+
+    .primary, .secondary {
+      width: 100%;
+      border: 0;
+      border-radius: 11px;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 16px;
+    }
+
+    .primary {
+      background: #1455c5;
+      color: white;
+    }
+
+    .secondary {
+      background: #e8effb;
+      color: #123c80;
+    }
+
+    .item {
+      border: 1px solid #e1e8f2;
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .item p {
+      white-space: pre-wrap;
+    }
+
+    .delete {
+      background: #feecec;
+      color: #a82020;
+      border: 0;
+      padding: 9px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .muted {
+      color: #66758c;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #status {
+      margin-top: 12px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+    <header class="header">
+      <h1>Customer Feedback</h1>
+      <p>RAKESH-BARAIYA-BUSINESS</p>
+      <p>તમારો અભિપ્રાય અમારા માટે મહત્વનો છે.</p>
+    </header>
+
+    <section class="card">
+      <form id="feedbackForm">
+        <label for="customer">ગ્રાહકનું નામ</label>
+        <input id="customer" maxlength="100"
+          placeholder="તમારું નામ" required>
+
+        <label for="rating">તમારું રેટિંગ પસંદ કરો</label>
+        <div class="stars" id="stars">
+          <button class="star" type="button"
+            data-rating="1" aria-label="1 star">★</button>
+          <button class="star" type="button"
+            data-rating="2" aria-label="2 stars">★</button>
+          <button class="star" type="button"
+            data-rating="3" aria-label="3 stars">★</button>
+          <button class="star" type="button"
+            data-rating="4" aria-label="4 stars">★</button>
+          <button class="star" type="button"
+            data-rating="5" aria-label="5 stars">★</button>
+        </div>
+
+        <label for="service">સેવા</label>
+        <select id="service" required>
+          <option value="">સેવા પસંદ કરો</option>
+          <option>Mobile App Development</option>
+          <option>Website Development</option>
+          <option>App & Website</option>
+          <option>Customer Support</option>
+          <option>Other</option>
+        </select>
+
+        <label for="message">તમારો ફીડબેક</label>
+        <textarea id="message" maxlength="2000"
+          placeholder="તમારો અનુભવ લખો..." required></textarea>
+
+        <button class="primary" type="submit">
+          ફીડબેક સેવ કરો
+        </button>
+        <p id="status" role="status" aria-live="polite"></p>
+      </form>
+
+      <p class="muted">
+        નોંધ: ફીડબેક આ બ્રાઉઝરના Local Storage માં સેવ થશે.
+        બ્રાઉઝરનો ડેટા સાફ કરવાથી તે દૂર થઈ શકે છે.
+      </p>
+
+      <button class="secondary" id="toggleHistory" type="button">
+        સેવ થયેલા ફીડબેક જુઓ
+      </button>
+
+      <section id="history" class="hidden">
+        <h2>Feedback History</h2>
+        <p id="empty" class="muted">હજુ કોઈ ફીડબેક સેવ નથી.</p>
+        <div id="feedbackList"></div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "rakesh_business_feedback_v1";
+    let rating = 0;
+
+    const form = document.getElementById("feedbackForm");
+    const status = document.getElementById("status");
+    const stars = [...document.querySelectorAll(".star")];
+
+    function getFeedback() {
+      try {
+        const data = JSON.parse(
+          localStorage.getItem(STORAGE_KEY) || "[]"
+        );
+        return Array.isArray(data) ? data : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function setRating(value) {
+      rating = value;
+      stars.forEach((star, index) => {
+        star.classList.toggle("active", index < rating);
+        star.setAttribute("aria-pressed",
+          String(index < rating));
+      });
+    }
+
+    stars.forEach(star => {
+      star.addEventListener("click", () => {
+        setRating(Number(star.dataset.rating));
+      });
+    });
+
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+
+      if (!rating) {
+        status.textContent = "કૃપા કરીને સ્ટાર રેટિંગ પસંદ કરો.";
+        return;
+      }
+
+      const feedback = {
+        id: Date.now(),
+        customer: document.getElementById("customer").value.trim(),
+        rating,
+        service: document.getElementById("service").value,
+        message: document.getElementById("message").value.trim(),
+        date: new Date().toLocaleString("en-IN")
+      };
+
+      if (!feedback.customer || !feedback.message) {
+        status.textContent = "બધી જરૂરી વિગતો ભરો.";
+        return;
+      }
+
+      try {
+        const all = getFeedback();
+        all.unshift(feedback);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+
+        status.textContent = "ફીડબેક સફળતાપૂર્વક સેવ થયો!";
+        form.reset();
+        setRating(0);
+        renderHistory();
+      } catch {
+        status.textContent =
+          "ફીડબેક સેવ થઈ શક્યો નથી. બ્રાઉઝર સ્ટોરેજ તપાસો.";
+      }
+    });
+
+    function renderHistory() {
+      const list = document.getElementById("feedbackList");
+      const empty = document.getElementById("empty");
+      const data = getFeedback();
+
+      list.replaceChildren();
+      empty.classList.toggle("hidden", data.length > 0);
+
+      data.forEach(item => {
+        const card = document.createElement("article");
+        card.className = "item";
+
+        const title = document.createElement("strong");
+        title.textContent = item.customer;
+
+        const starsText = document.createElement("p");
+        starsText.textContent = "★".repeat(item.rating) +
+          "☆".repeat(5 - item.rating) + " · " + item.service;
+
+        const message = document.createElement("p");
+        message.textContent = item.message;
+
+        const date = document.createElement("small");
+        date.textContent = item.date;
+        date.className = "muted";
+
+        const remove = document.createElement("button");
+        remove.textContent = "Delete";
+        remove.className = "delete";
+        remove.type = "button";
+        remove.addEventListener("click", () => {
+          if (!confirm("આ ફીડબેક ડિલીટ કરવો છે?")) return;
+
+          const updated = getFeedback().filter(
+            entry => entry.id !== item.id
+          );
+
+          localStorage.setItem(
+            STORAGE_KEY, JSON.stringify(updated)
+          );
+          renderHistory();
+        });
+
+        card.append(title, starsText, message, date,
+          document.createElement("br"), remove);
+        list.appendChild(card);
+      });
+    }
+
+    document.getElementById("toggleHistory")
+      .addEventListener("click", () => {
+        const history = document.getElementById("history");
+        history.classList.toggle("hidden");
+        renderHistory();
+      });
+  </script>
+</body>
+</html>
