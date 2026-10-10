@@ -3,345 +3,197 @@
 <html lang="gu">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#123c80">
-  <title>Customer Feedback | Rakesh Business</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Customer Feedback | Rakesh Baraiya</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
     body {
-      margin: 0;
-      padding: 20px;
-      font-family: -apple-system, BlinkMacSystemFont,
-        "Noto Sans Gujarati", Arial, sans-serif;
-      background: #f1f5fb;
-      color: #172b4d;
+      margin: 0; padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #f3f6fc; color: #172033;
     }
-
-    .container {
-      max-width: 520px;
-      margin: 20px auto;
-    }
-
-    .header {
-      text-align: center;
-      background: linear-gradient(135deg, #123c80, #2876db);
-      color: white;
-      padding: 28px 18px;
-      border-radius: 20px 20px 0 0;
-    }
-
-    .header h1 {
-      font-size: 24px;
-      margin: 0 0 8px;
-    }
-
-    .header p {
-      margin: 0;
-      opacity: 0.9;
-    }
-
+    .container { max-width: 650px; margin: 0 auto; }
     .card {
-      background: white;
-      padding: 22px;
-      border-radius: 0 0 20px 20px;
-      box-shadow: 0 8px 28px #19365b12;
+      background: white; padding: 22px; margin-bottom: 18px;
+      border-radius: 16px; box-shadow: 0 4px 18px #17203312;
     }
-
-    label {
-      display: block;
-      font-weight: 600;
-      margin: 16px 0 8px;
+    h1, h2 { margin-top: 0; }
+    h1 { color: #1455d9; font-size: 26px; }
+    label { display: block; font-weight: bold; margin: 14px 0 7px; }
+    input, textarea {
+      width: 100%; padding: 12px; border: 1px solid #ccd4e0;
+      border-radius: 9px; font-size: 16px;
     }
-
-    input, textarea, select {
-      width: 100%;
-      padding: 13px;
-      border: 1px solid #d4ddec;
-      border-radius: 10px;
-      font-size: 16px;
-      background: white;
-    }
-
-    textarea {
-      min-height: 110px;
-      resize: vertical;
-    }
-
-    .stars {
-      display: flex;
-      gap: 8px;
-      margin: 8px 0;
-    }
-
+    textarea { min-height: 110px; resize: vertical; }
+    .stars { display: flex; gap: 8px; }
     .star {
-      border: 0;
-      background: #edf1f7;
-      color: #8a96a8;
-      font-size: 32px;
-      border-radius: 10px;
-      padding: 5px 10px;
-      cursor: pointer;
+      border: 0; background: none; padding: 0; font-size: 35px;
+      color: #c8ced8; cursor: pointer;
     }
-
-    .star.active {
-      color: #f5a623;
-      background: #fff5dd;
+    .star.selected { color: #f5a623; }
+    button.submit {
+      width: 100%; margin-top: 18px; padding: 14px;
+      border: 0; border-radius: 9px; background: #1455d9;
+      color: white; font-size: 16px; font-weight: bold;
     }
-
-    .primary, .secondary {
-      width: 100%;
-      border: 0;
-      border-radius: 11px;
-      padding: 14px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 16px;
-    }
-
-    .primary {
-      background: #1455c5;
-      color: white;
-    }
-
-    .secondary {
-      background: #e8effb;
-      color: #123c80;
-    }
-
-    .item {
-      border: 1px solid #e1e8f2;
-      border-radius: 12px;
-      padding: 14px;
-      margin-top: 12px;
-      overflow-wrap: anywhere;
-    }
-
-    .item p {
-      white-space: pre-wrap;
-    }
-
-    .delete {
-      background: #feecec;
-      color: #a82020;
-      border: 0;
-      padding: 9px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    .muted {
-      color: #66758c;
-      font-size: 13px;
-      line-height: 1.6;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    #status {
-      margin-top: 12px;
-      font-weight: 600;
-    }
+    .review { border-top: 1px solid #e5e9f0; padding: 14px 0; }
+    .review:first-child { border-top: 0; }
+    .review-name { font-weight: bold; }
+    .review-stars { color: #f5a623; }
+    .muted { color: #687386; font-size: 14px; }
+    #status { margin-top: 12px; }
+    a { color: #1455d9; }
   </style>
 </head>
-
 <body>
   <main class="container">
-    <header class="header">
-      <h1>Customer Feedback</h1>
-      <p>RAKESH-BARAIYA-BUSINESS</p>
-      <p>તમારો અભિપ્રાય અમારા માટે મહત્વનો છે.</p>
-    </header>
-
     <section class="card">
+      <h1>Customer Feedback</h1>
+      <p>તમારો અનુભવ અમારી સાથે શેર કરો.</p>
       <form id="feedbackForm">
-        <label for="customer">ગ્રાહકનું નામ</label>
-        <input id="customer" maxlength="100"
-          placeholder="તમારું નામ" required>
+        <label for="name">તમારું નામ</label>
+        <input id="name" maxlength="100" required
+          placeholder="તમારું નામ લખો">
 
-        <label for="rating">તમારું રેટિંગ પસંદ કરો</label>
-        <div class="stars" id="stars">
-          <button class="star" type="button"
-            data-rating="1" aria-label="1 star">★</button>
-          <button class="star" type="button"
-            data-rating="2" aria-label="2 stars">★</button>
-          <button class="star" type="button"
-            data-rating="3" aria-label="3 stars">★</button>
-          <button class="star" type="button"
-            data-rating="4" aria-label="4 stars">★</button>
-          <button class="star" type="button"
-            data-rating="5" aria-label="5 stars">★</button>
+        <label>તમારું રેટિંગ પસંદ કરો</label>
+        <div class="stars" id="starPicker" aria-label="Rating">
+          <button class="star" type="button" data-rating="1" aria-label="1 star">★</button>
+          <button class="star" type="button" data-rating="2" aria-label="2 stars">★</button>
+          <button class="star" type="button" data-rating="3" aria-label="3 stars">★</button>
+          <button class="star" type="button" data-rating="4" aria-label="4 stars">★</button>
+          <button class="star" type="button" data-rating="5" aria-label="5 stars">★</button>
         </div>
 
-        <label for="service">સેવા</label>
-        <select id="service" required>
-          <option value="">સેવા પસંદ કરો</option>
-          <option>Mobile App Development</option>
-          <option>Website Development</option>
-          <option>App & Website</option>
-          <option>Customer Support</option>
-          <option>Other</option>
-        </select>
+        <label for="message">તમારો Feedback</label>
+        <textarea id="message" maxlength="2000" required
+          placeholder="તમારો અનુભવ લખો..."></textarea>
 
-        <label for="message">તમારો ફીડબેક</label>
-        <textarea id="message" maxlength="2000"
-          placeholder="તમારો અનુભવ લખો..." required></textarea>
-
-        <button class="primary" type="submit">
-          ફીડબેક સેવ કરો
+        <button class="submit" type="submit" id="submitBtn">
+          Feedback મોકલો
         </button>
-        <p id="status" role="status" aria-live="polite"></p>
+        <p id="status" role="status"></p>
       </form>
-
-      <p class="muted">
-        નોંધ: ફીડબેક આ બ્રાઉઝરના Local Storage માં સેવ થશે.
-        બ્રાઉઝરનો ડેટા સાફ કરવાથી તે દૂર થઈ શકે છે.
-      </p>
-
-      <button class="secondary" id="toggleHistory" type="button">
-        સેવ થયેલા ફીડબેક જુઓ
-      </button>
-
-      <section id="history" class="hidden">
-        <h2>Feedback History</h2>
-        <p id="empty" class="muted">હજુ કોઈ ફીડબેક સેવ નથી.</p>
-        <div id="feedbackList"></div>
-      </section>
     </section>
+
+    <section class="card">
+      <h2>ગ્રાહકોના Feedback</h2>
+      <p class="muted">ગ્રાહકોના જાહેર રિવ્યૂ અહીં દેખાશે.</p>
+      <div id="reviews">Feedback લોડ થઈ રહ્યા છે...</div>
+    </section>
+
+    <p class="muted"><a href="./index.html">← Dashboard પર પાછા જાઓ</a></p>
   </main>
 
-  <script>
-    const STORAGE_KEY = "rakesh_business_feedback_v1";
+  <script type="module">
+    import { createClient } from
+      'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+    const SUPABASE_URL = 'https://bgakkkbavdtcndylpwgd.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_fcs7MDIxJomgpkkuHLH1eg_Zt_UcHMh';
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
     let rating = 0;
 
-    const form = document.getElementById("feedbackForm");
-    const status = document.getElementById("status");
-    const stars = [...document.querySelectorAll(".star")];
+    const statusEl = document.getElementById('status');
+    const submitBtn = document.getElementById('submitBtn');
 
-    function getFeedback() {
-      try {
-        const data = JSON.parse(
-          localStorage.getItem(STORAGE_KEY) || "[]"
-        );
-        return Array.isArray(data) ? data : [];
-      } catch {
-        return [];
-      }
-    }
-
-    function setRating(value) {
-      rating = value;
-      stars.forEach((star, index) => {
-        star.classList.toggle("active", index < rating);
-        star.setAttribute("aria-pressed",
-          String(index < rating));
-      });
-    }
-
-    stars.forEach(star => {
-      star.addEventListener("click", () => {
-        setRating(Number(star.dataset.rating));
+    document.querySelectorAll('.star').forEach(button => {
+      button.addEventListener('click', () => {
+        rating = Number(button.dataset.rating);
+        document.querySelectorAll('.star').forEach(star => {
+          star.classList.toggle(
+            'selected', Number(star.dataset.rating) <= rating
+          );
+        });
       });
     });
 
-    form.addEventListener("submit", event => {
-      event.preventDefault();
+    function safeText(tag, className, text) {
+      const element = document.createElement(tag);
+      if (className) element.className = className;
+      element.textContent = text ?? '';
+      return element;
+    }
 
-      if (!rating) {
-        status.textContent = "કૃપા કરીને સ્ટાર રેટિંગ પસંદ કરો.";
+    async function loadReviews() {
+      const box = document.getElementById('reviews');
+      box.replaceChildren(safeText('p', 'muted', 'Feedback લોડ થઈ રહ્યા છે...'));
+
+      const { data, error } = await supabase
+        .from('feedback')
+        .select('name, rating, message, created_at')
+        .order('created_at', { ascending: false })
+        .limit(100);
+
+      if (error) {
+        box.replaceChildren(safeText(
+          'p', '', 'Feedback લોડ થઈ શક્યા નથી. કૃપા કરીને પછી પ્રયાસ કરો.'
+        ));
+        console.error(error);
         return;
       }
 
-      const feedback = {
-        id: Date.now(),
-        customer: document.getElementById("customer").value.trim(),
-        rating,
-        service: document.getElementById("service").value,
-        message: document.getElementById("message").value.trim(),
-        date: new Date().toLocaleString("en-IN")
-      };
+      box.replaceChildren();
 
-      if (!feedback.customer || !feedback.message) {
-        status.textContent = "બધી જરૂરી વિગતો ભરો.";
+      if (!data || data.length === 0) {
+        box.append(safeText('p', 'muted', 'હજુ કોઈ Feedback મળ્યો નથી.'));
         return;
       }
-
-      try {
-        const all = getFeedback();
-        all.unshift(feedback);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
-
-        status.textContent = "ફીડબેક સફળતાપૂર્વક સેવ થયો!";
-        form.reset();
-        setRating(0);
-        renderHistory();
-      } catch {
-        status.textContent =
-          "ફીડબેક સેવ થઈ શક્યો નથી. બ્રાઉઝર સ્ટોરેજ તપાસો.";
-      }
-    });
-
-    function renderHistory() {
-      const list = document.getElementById("feedbackList");
-      const empty = document.getElementById("empty");
-      const data = getFeedback();
-
-      list.replaceChildren();
-      empty.classList.toggle("hidden", data.length > 0);
 
       data.forEach(item => {
-        const card = document.createElement("article");
-        card.className = "item";
-
-        const title = document.createElement("strong");
-        title.textContent = item.customer;
-
-        const starsText = document.createElement("p");
-        starsText.textContent = "★".repeat(item.rating) +
-          "☆".repeat(5 - item.rating) + " · " + item.service;
-
-        const message = document.createElement("p");
-        message.textContent = item.message;
-
-        const date = document.createElement("small");
-        date.textContent = item.date;
-        date.className = "muted";
-
-        const remove = document.createElement("button");
-        remove.textContent = "Delete";
-        remove.className = "delete";
-        remove.type = "button";
-        remove.addEventListener("click", () => {
-          if (!confirm("આ ફીડબેક ડિલીટ કરવો છે?")) return;
-
-          const updated = getFeedback().filter(
-            entry => entry.id !== item.id
-          );
-
-          localStorage.setItem(
-            STORAGE_KEY, JSON.stringify(updated)
-          );
-          renderHistory();
-        });
-
-        card.append(title, starsText, message, date,
-          document.createElement("br"), remove);
-        list.appendChild(card);
+        const review = document.createElement('article');
+        review.className = 'review';
+        review.append(safeText('div', 'review-name', item.name));
+        review.append(safeText(
+          'div', 'review-stars',
+          '★'.repeat(item.rating) + '☆'.repeat(5 - item.rating)
+        ));
+        review.append(safeText('p', '', item.message));
+        review.append(safeText(
+          'div', 'muted',
+          new Date(item.created_at).toLocaleDateString('en-IN')
+        ));
+        box.append(review);
       });
     }
 
-    document.getElementById("toggleHistory")
-      .addEventListener("click", () => {
-        const history = document.getElementById("history");
-        history.classList.toggle("hidden");
-        renderHistory();
+    document.getElementById('feedbackForm').addEventListener('submit', async event => {
+      event.preventDefault();
+
+      const name = document.getElementById('name').value.trim();
+      const message = document.getElementById('message').value.trim();
+
+      if (!name || !message || rating < 1 || rating > 5) {
+        statusEl.textContent = 'નામ, રેટિંગ અને Feedback ભરો.';
+        return;
+      }
+
+      submitBtn.disabled = true;
+      statusEl.textContent = 'Feedback મોકલાઈ રહ્યો છે...';
+
+      const { error } = await supabase.from('feedback').insert({
+        name, rating, message
       });
+
+      submitBtn.disabled = false;
+
+      if (error) {
+        statusEl.textContent =
+          'Feedback મોકલી શકાયો નથી. કૃપા કરીને ફરી પ્રયાસ કરો.';
+        console.error(error);
+        return;
+      }
+
+      statusEl.textContent = 'આભાર! તમારો Feedback સફળતાપૂર્વક સેવ થયો.';
+      document.getElementById('feedbackForm').reset();
+      rating = 0;
+      document.querySelectorAll('.star').forEach(star =>
+        star.classList.remove('selected')
+      );
+      await loadReviews();
+    });
+
+    loadReviews();
   </script>
 </body>
 </html>
