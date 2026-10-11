@@ -8,36 +8,63 @@
   <style>
     * { box-sizing: border-box; }
     body {
-      margin: 0; padding: 20px;
+      margin: 0;
+      padding: 20px;
       font-family: Arial, sans-serif;
-      background: #f3f6fc; color: #172033;
+      background: #f3f6fc;
+      color: #172033;
     }
     .container { max-width: 650px; margin: 0 auto; }
     .card {
-      background: white; padding: 22px; margin-bottom: 18px;
-      border-radius: 16px; box-shadow: 0 4px 18px #17203312;
+      background: white;
+      padding: 22px;
+      margin-bottom: 18px;
+      border-radius: 16px;
+      box-shadow: 0 4px 18px #17203312;
     }
     h1, h2 { margin-top: 0; }
     h1 { color: #1455d9; font-size: 26px; }
-    label { display: block; font-weight: bold; margin: 14px 0 7px; }
-    input, textarea {
-      width: 100%; padding: 12px; border: 1px solid #ccd4e0;
-      border-radius: 9px; font-size: 16px;
+    label {
+      display: block;
+      font-weight: bold;
+      margin: 14px 0 7px;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccd4e0;
+      border-radius: 9px;
+      font-size: 16px;
+      background: white;
     }
     textarea { min-height: 110px; resize: vertical; }
     .stars { display: flex; gap: 8px; }
     .star {
-      border: 0; background: none; padding: 0; font-size: 35px;
-      color: #c8ced8; cursor: pointer;
+      border: 0;
+      background: none;
+      padding: 0;
+      font-size: 35px;
+      color: #c8ced8;
+      cursor: pointer;
     }
     .star.selected { color: #f5a623; }
     button.submit {
-      width: 100%; margin-top: 18px; padding: 14px;
-      border: 0; border-radius: 9px; background: #1455d9;
-      color: white; font-size: 16px; font-weight: bold;
+      width: 100%;
+      margin-top: 18px;
+      padding: 14px;
+      border: 0;
+      border-radius: 9px;
+      background: #1455d9;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
     }
-    .review { border-top: 1px solid #e5e9f0; padding: 14px 0; }
-    .review:first-child { border-top: 0; }
+    button:disabled { opacity: 0.6; }
+    .review {
+      border-top: 1px solid #e5e9f0;
+      padding: 14px 0;
+    }
     .review-name { font-weight: bold; }
     .review-stars { color: #f5a623; }
     .muted { color: #687386; font-size: 14px; }
@@ -50,18 +77,29 @@
     <section class="card">
       <h1>Customer Feedback</h1>
       <p>તમારો અનુભવ અમારી સાથે શેર કરો.</p>
+
       <form id="feedbackForm">
         <label for="name">તમારું નામ</label>
         <input id="name" maxlength="100" required
           placeholder="તમારું નામ લખો">
 
+        <label for="service">કઈ સેવા લીધી હતી?</label>
+        <select id="service" required>
+          <option value="">સેવા પસંદ કરો</option>
+          <option value="Mobile App Development">Mobile App Development</option>
+          <option value="Website Development">Website Development</option>
+          <option value="App & Website">App & Website</option>
+          <option value="Customer Support">Customer Support</option>
+          <option value="Other">Other</option>
+        </select>
+
         <label>તમારું રેટિંગ પસંદ કરો</label>
         <div class="stars" id="starPicker" aria-label="Rating">
-          <button class="star" type="button" data-rating="1" aria-label="1 star">★</button>
-          <button class="star" type="button" data-rating="2" aria-label="2 stars">★</button>
-          <button class="star" type="button" data-rating="3" aria-label="3 stars">★</button>
-          <button class="star" type="button" data-rating="4" aria-label="4 stars">★</button>
-          <button class="star" type="button" data-rating="5" aria-label="5 stars">★</button>
+          <button class="star" type="button" data-rating="1">★</button>
+          <button class="star" type="button" data-rating="2">★</button>
+          <button class="star" type="button" data-rating="3">★</button>
+          <button class="star" type="button" data-rating="4">★</button>
+          <button class="star" type="button" data-rating="5">★</button>
         </div>
 
         <label for="message">તમારો Feedback</label>
@@ -81,15 +119,19 @@
       <div id="reviews">Feedback લોડ થઈ રહ્યા છે...</div>
     </section>
 
-    <p class="muted"><a href="./index.html">← Dashboard પર પાછા જાઓ</a></p>
+    <p class="muted">
+      <a href="./index.html">← Dashboard પર પાછા જાઓ</a>
+    </p>
   </main>
 
   <script type="module">
     import { createClient } from
       'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-    const SUPABASE_URL = 'https://bgakkkbavdtcndylpwgd.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_fcs7MDIxJomgpkkuHLH1eg_Zt_UcHMh';
+    const SUPABASE_URL =
+      'https://bgakkkbavdtcndylpwgd.supabase.co';
+    const SUPABASE_KEY =
+      'sb_publishable_fcs7MDIxJomgpkkuHLH1eg_Zt_UcHMh';
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
     let rating = 0;
@@ -100,9 +142,11 @@
     document.querySelectorAll('.star').forEach(button => {
       button.addEventListener('click', () => {
         rating = Number(button.dataset.rating);
+
         document.querySelectorAll('.star').forEach(star => {
           star.classList.toggle(
-            'selected', Number(star.dataset.rating) <= rating
+            'selected',
+            Number(star.dataset.rating) <= rating
           );
         });
       });
@@ -117,18 +161,20 @@
 
     async function loadReviews() {
       const box = document.getElementById('reviews');
-      box.replaceChildren(safeText('p', 'muted', 'Feedback લોડ થઈ રહ્યા છે...'));
+      box.replaceChildren(
+        safeText('p', 'muted', 'Feedback લોડ થઈ રહ્યા છે...')
+      );
 
       const { data, error } = await supabase
         .from('feedback')
-        .select('name, rating, message, created_at')
+        .select('name, service, rating, message, created_at')
         .order('created_at', { ascending: false })
         .limit(100);
 
       if (error) {
-        box.replaceChildren(safeText(
-          'p', '', 'Feedback લોડ થઈ શક્યા નથી. કૃપા કરીને પછી પ્રયાસ કરો.'
-        ));
+        box.replaceChildren(
+          safeText('p', '', 'Feedback લોડ થઈ શક્યા નથી.')
+        );
         console.error(error);
         return;
       }
@@ -136,62 +182,92 @@
       box.replaceChildren();
 
       if (!data || data.length === 0) {
-        box.append(safeText('p', 'muted', 'હજુ કોઈ Feedback મળ્યો નથી.'));
+        box.append(
+          safeText('p', 'muted', 'હજુ કોઈ Feedback મળ્યો નથી.')
+        );
         return;
       }
 
       data.forEach(item => {
         const review = document.createElement('article');
         review.className = 'review';
-        review.append(safeText('div', 'review-name', item.name));
-        review.append(safeText(
-          'div', 'review-stars',
-          '★'.repeat(item.rating) + '☆'.repeat(5 - item.rating)
-        ));
+
+        review.append(
+          safeText('div', 'review-name', item.name)
+        );
+
+        review.append(
+          safeText('div', 'muted', 'સેવા: ' + item.service)
+        );
+
+        review.append(
+          safeText(
+            'div',
+            'review-stars',
+            '★'.repeat(item.rating) + '☆'.repeat(5 - item.rating)
+          )
+        );
+
         review.append(safeText('p', '', item.message));
-        review.append(safeText(
-          'div', 'muted',
-          new Date(item.created_at).toLocaleDateString('en-IN')
-        ));
+
+        review.append(
+          safeText(
+            'div',
+            'muted',
+            new Date(item.created_at).toLocaleDateString('en-IN')
+          )
+        );
+
         box.append(review);
       });
     }
 
-    document.getElementById('feedbackForm').addEventListener('submit', async event => {
-      event.preventDefault();
+    document.getElementById('feedbackForm')
+      .addEventListener('submit', async event => {
+        event.preventDefault();
 
-      const name = document.getElementById('name').value.trim();
-      const message = document.getElementById('message').value.trim();
+        const name = document.getElementById('name').value.trim();
+        const service = document.getElementById('service').value;
+        const message = document.getElementById('message').value.trim();
 
-      if (!name || !message || rating < 1 || rating > 5) {
-        statusEl.textContent = 'નામ, રેટિંગ અને Feedback ભરો.';
-        return;
-      }
+        if (!name || !service || !message || rating < 1 || rating > 5) {
+          statusEl.textContent =
+            'નામ, સેવા, રેટિંગ અને Feedback ભરો.';
+          return;
+        }
 
-      submitBtn.disabled = true;
-      statusEl.textContent = 'Feedback મોકલાઈ રહ્યો છે...';
+        submitBtn.disabled = true;
+        statusEl.textContent = 'Feedback મોકલાઈ રહ્યો છે...';
 
-      const { error } = await supabase.from('feedback').insert({
-        name, rating, message
+        try {
+          const { error } = await supabase.from('feedback').insert({
+            name,
+            service,
+            rating,
+            message
+          });
+
+          if (error) throw error;
+
+          statusEl.textContent =
+            'આભાર! તમારો Feedback સફળતાપૂર્વક સેવ થયો.';
+
+          document.getElementById('feedbackForm').reset();
+          rating = 0;
+
+          document.querySelectorAll('.star').forEach(star => {
+            star.classList.remove('selected');
+          });
+
+          await loadReviews();
+        } catch (error) {
+          console.error(error);
+          statusEl.textContent =
+            'Feedback સેવ થયો નથી. Database માં service કૉલમ તપાસો.';
+        } finally {
+          submitBtn.disabled = false;
+        }
       });
-
-      submitBtn.disabled = false;
-
-      if (error) {
-        statusEl.textContent =
-          'Feedback મોકલી શકાયો નથી. કૃપા કરીને ફરી પ્રયાસ કરો.';
-        console.error(error);
-        return;
-      }
-
-      statusEl.textContent = 'આભાર! તમારો Feedback સફળતાપૂર્વક સેવ થયો.';
-      document.getElementById('feedbackForm').reset();
-      rating = 0;
-      document.querySelectorAll('.star').forEach(star =>
-        star.classList.remove('selected')
-      );
-      await loadReviews();
-    });
 
     loadReviews();
   </script>
