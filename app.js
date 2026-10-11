@@ -2,6 +2,7 @@
 /* =========================================================
    RAKESH BARAIYA - BUSINESS DASHBOARD
    Supabase Authentication + Customer History
+   + Clients Data integration
 ========================================================= */
 
 const SUPABASE_URL =
@@ -14,6 +15,9 @@ const db = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_PUBLISHABLE_KEY
 );
+
+// Share the existing Supabase client with clients-data.js.
+window.__businessDashboardSupabase = db;
 
 let customers = [];
 let selectedPackageMonths = 0;
@@ -148,21 +152,22 @@ function showApp() {
 
 /* =========================================================
    NAVIGATION
+   clients-data.js replaces showPage when it loads.
 ========================================================= */
 
 function showPage(pageId) {
-  const dashboardPage = document.getElementById("dashboardPage");
-  const customerPage = document.getElementById("customerPage");
+  const pageIds = [
+    "dashboardPage",
+    "customerPage",
+    "clientsDataPage"
+  ];
 
-  if (!dashboardPage || !customerPage) return;
-
-  if (pageId === "customerPage") {
-    dashboardPage.classList.add("hidden");
-    customerPage.classList.remove("hidden");
-  } else {
-    customerPage.classList.add("hidden");
-    dashboardPage.classList.remove("hidden");
-  }
+  pageIds.forEach(id => {
+    document.getElementById(id)?.classList.toggle(
+      "hidden",
+      id !== pageId
+    );
+  });
 }
 
 function openNewCustomer() {
@@ -240,7 +245,8 @@ async function saveCustomer(event) {
     return;
   }
 
-  const value = id => document.getElementById(id)?.value.trim() || "";
+  const value = id =>
+    document.getElementById(id)?.value.trim() || "";
 
   const name = value("customerName");
   const mobile = value("customerMobile");
@@ -305,7 +311,11 @@ async function saveCustomer(event) {
       return;
     }
 
-    alert(editingId ? "Customer updated successfully!" : "Customer saved successfully!");
+    alert(
+      editingId
+        ? "Customer updated successfully!"
+        : "Customer saved successfully!"
+    );
 
     resetCustomerForm();
     await loadCustomers();
@@ -324,7 +334,7 @@ async function saveCustomer(event) {
 }
 
 /* =========================================================
-   RESET FORM
+   RESET CUSTOMER FORM
 ========================================================= */
 
 function resetCustomerForm() {
@@ -477,7 +487,15 @@ function renderCustomers(list) {
     pdfBtn.onclick = () => generateCustomerPDF(customer.id);
 
     actionCell.append(editBtn, deleteBtn, pdfBtn);
-    row.append(nameCell, mobileCell, packageCell, paymentCell, statusCell, actionCell);
+    row.append(
+      nameCell,
+      mobileCell,
+      packageCell,
+      paymentCell,
+      statusCell,
+      actionCell
+    );
+
     tbody.appendChild(row);
   });
 }
@@ -513,7 +531,10 @@ function searchCustomers() {
 ========================================================= */
 
 function editCustomer(id) {
-  const customer = customers.find(item => String(item.id) === String(id));
+  const customer = customers.find(
+    item => String(item.id) === String(id)
+  );
+
   if (!customer) return;
 
   const setValue = (elementId, value) => {
@@ -547,7 +568,10 @@ function editCustomer(id) {
 ========================================================= */
 
 async function deleteCustomer(id) {
-  const customer = customers.find(item => String(item.id) === String(id));
+  const customer = customers.find(
+    item => String(item.id) === String(id)
+  );
+
   if (!customer) return;
 
   if (!confirm("Delete customer " + customer.name + "?")) return;
@@ -574,7 +598,10 @@ async function deleteCustomer(id) {
 ========================================================= */
 
 function generateCustomerPDF(id) {
-  const customer = customers.find(item => String(item.id) === String(id));
+  const customer = customers.find(
+    item => String(item.id) === String(id)
+  );
+
   if (!customer) return;
 
   if (!window.jspdf || !window.jspdf.jsPDF) {
@@ -615,7 +642,11 @@ function generateCustomerPDF(id) {
   });
 
   doc.setFontSize(9);
-  doc.text("Generated from RAKESH BARAIYA Business Dashboard", 20, 285);
+  doc.text(
+    "Generated from RAKESH BARAIYA Business Dashboard",
+    20,
+    285
+  );
 
   const safeName = String(customer.name || "customer")
     .replace(/[^a-z0-9_-]/gi, "_");
