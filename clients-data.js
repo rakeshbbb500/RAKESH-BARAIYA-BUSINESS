@@ -13,7 +13,7 @@
     body.replaceChildren();
     const tr = document.createElement("tr");
     const td = document.createElement("td");
-    td.colSpan = 6;
+    td.colSpan = 7;
     td.textContent = message;
     tr.appendChild(td);
     body.appendChild(tr);
@@ -38,6 +38,8 @@
     if (el("clientDataCancelBtn")) el("clientDataCancelBtn").hidden = true;
     if (el("clientDataPaymentStatus")) el("clientDataPaymentStatus").value = "Pending";
     if (el("clientDataPaymentAmount")) el("clientDataPaymentAmount").value = "0";
+    if (el("clientDataDate")) el("clientDataDate").value = new Date().toISOString().slice(0, 10);
+    if (el("clientDataNotes")) el("clientDataNotes").value = "";
   }
   async function load() {
     if (!clientDB) { showMessage("Supabase client is not available. Check app.js."); return; }
@@ -48,7 +50,7 @@
       const { data: authData, error: authError } = await clientDB.auth.getUser();
       if (authError || !authData?.user) { showMessage("Please log in to view client data."); return; }
       const { data, error } = await clientDB.from("clients_data")
-        .select("id,name,mobile,service,gmail_id,payment_status,payment_amount,payment_completed_at,created_at")
+        .select("id,name,mobile,service,gmail_id,client_date,notes,payment_status,payment_amount,payment_completed_at,created_at")
         .order("created_at", { ascending: false });
       if (error) { console.error(error); showMessage("Could not load records: " + error.message); return; }
       rows = data || [];
@@ -64,12 +66,12 @@
     body.replaceChildren();
     const query = (el("clientDataSearch")?.value || "").trim().toLowerCase();
     const filtered = rows.filter(item =>
-      [item.name,item.mobile,item.service,item.gmail_id,item.payment_status]
+      [item.name,item.mobile,item.service,item.gmail_id,item.client_date,item.notes,item.payment_status]
         .some(value => String(value || "").toLowerCase().includes(query)));
     if (!filtered.length) { showMessage("No client records found."); return; }
     filtered.forEach(item => {
       const tr = document.createElement("tr");
-      tr.append(cell(item.name), cell(item.mobile), cell(item.service), cell(item.gmail_id));
+      tr.append(cell(item.name), cell(item.mobile), cell(item.service), cell(item.gmail_id), cell(item.client_date));
       const pay = document.createElement("td");
       const status = document.createElement("strong");
       status.textContent = item.payment_status || "Pending";
@@ -99,6 +101,8 @@
     el("clientDataMobile").value = item.mobile || "";
     el("clientDataService").value = item.service || "";
     el("clientDataGmail").value = item.gmail_id || "";
+    if (el("clientDataDate")) el("clientDataDate").value = item.client_date || "";
+    if (el("clientDataNotes")) el("clientDataNotes").value = item.notes || "";
     if (el("clientDataPaymentStatus")) el("clientDataPaymentStatus").value = item.payment_status || "Pending";
     if (el("clientDataPaymentAmount")) el("clientDataPaymentAmount").value = Number(item.payment_amount || 0);
     el("clientDataSaveBtn").textContent = "Update Client Data";
@@ -112,10 +116,12 @@
     const mobile = el("clientDataMobile").value.trim();
     const service = el("clientDataService").value;
     const gmail = el("clientDataGmail").value.trim();
+    const clientDate = el("clientDataDate").value;
+    const notes = el("clientDataNotes").value.trim();
     const id = el("clientDataId").value;
     const paymentStatus = el("clientDataPaymentStatus")?.value || "Pending";
     const paymentAmount = Number(el("clientDataPaymentAmount")?.value || 0);
-    if (!name || !mobile || !service) { alert("Please enter Client Name, Mobile Number and Service."); return; }
+    if (!name || !mobile || !service || !clientDate) { alert("Please enter Client Name, Mobile Number, Service and Date."); return; }
     if (!Number.isFinite(paymentAmount) || paymentAmount < 0) { alert("Payment amount must be zero or more."); return; }
     const button = el("clientDataSaveBtn");
     button.disabled = true;
@@ -124,7 +130,7 @@
       const { data: authData, error: authError } = await clientDB.auth.getUser();
       if (authError || !authData?.user) { alert("Please log in again."); return; }
       const payload = {
-        name, mobile, service, gmail_id: gmail || null,
+        name, mobile, service, gmail_id: gmail || null, client_date: clientDate, notes: notes || null,
         payment_status: paymentStatus, payment_amount: paymentAmount,
         payment_completed_at: paymentStatus === "Complete" ? new Date().toISOString() : null
       };
