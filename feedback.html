@@ -269,7 +269,7 @@
             star.classList.remove('selected');
           });
 
-          await loadReviews();
+          // The thank-you screen replaces the review list, so no reload is needed here.
         } catch (error) {
           console.error(error);
           statusEl.textContent =
