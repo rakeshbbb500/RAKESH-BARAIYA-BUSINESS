@@ -4,86 +4,183 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#071f3c">
-  <title>Rakesh Baraiya | WhatsApp & Feedback</title>
+  <meta name="description" content="Rakesh Baraiya — Application, website and business software development portfolio.">
+  <title>Rakesh Baraiya | Premium Portfolio</title>
   <style>
-    :root{--navy:#071f3c;--blue:#123b6d;--orange:#ff9900;--ink:#172033;--muted:#687386;--line:#e4eaf2;--bg:#f3f6fb}
+    :root{--navy:#071f3c;--blue:#123b6d;--orange:#ff9900;--ink:#172033;--muted:#687386;--line:#e4eaf2;--bg:#f3f6fb;--green:#128c4a}
     *{box-sizing:border-box}
-    body{margin:0;background:linear-gradient(180deg,#eaf1fa 0,#f7f9fc 340px);font-family:Arial,system-ui,sans-serif;color:var(--ink)}
-    .wrap{width:min(100% - 28px,760px);margin:0 auto;padding:24px 0 40px}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:linear-gradient(180deg,#eaf1fa 0,#f7f9fc 360px);font-family:Arial,system-ui,sans-serif;color:var(--ink)}
+    a{color:inherit}
+    .wrap{width:min(100% - 28px,900px);margin:0 auto;padding:20px 0 42px}
     .top{display:flex;align-items:center;gap:10px;color:var(--navy);font-weight:800;letter-spacing:.3px;margin-bottom:18px}
-    .mark{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:var(--navy);color:var(--orange);font-size:22px}
-    .hero-link{display:block;color:inherit;text-decoration:none;border-radius:25px;outline-offset:4px}
-    .hero{position:relative;overflow:hidden;border-radius:25px;padding:28px 22px 24px;text-align:center;background:linear-gradient(145deg,#071f3c,#123b6d);color:#fff;box-shadow:0 18px 44px #071f3c2b;border:1px solid #ffffff22;transition:transform .18s,box-shadow .18s}
+    .mark{display:grid;place-items:center;width:44px;height:44px;border-radius:13px;background:var(--navy);color:var(--orange);font-size:20px}
+    .top small{font-weight:500;letter-spacing:0;color:var(--muted)}
+    .hero-link{display:block;color:inherit;text-decoration:none;border-radius:26px;outline-offset:4px}
+    .hero{position:relative;overflow:hidden;border-radius:26px;padding:30px 22px 24px;text-align:center;background:linear-gradient(145deg,#071f3c,#123b6d);color:#fff;box-shadow:0 18px 44px #071f3c2b;border:1px solid #ffffff22;transition:transform .18s,box-shadow .18s}
     .hero-link:hover .hero,.hero-link:focus-visible .hero{transform:translateY(-3px);box-shadow:0 22px 48px #071f3c38}
     .hero:before,.hero:after{content:"";position:absolute;background:var(--orange);height:8px;width:130px;transform:rotate(-35deg);opacity:.95}
     .hero:before{left:-35px;top:28px}.hero:after{right:-45px;bottom:28px}
-    .avatar{width:112px;height:112px;object-fit:cover;border:4px solid #fff;border-radius:50%;background:#fff;margin:0 auto 14px;box-shadow:0 0 0 4px var(--orange)}
-    h1{font-size:clamp(25px,5vw,35px);margin:0 0 8px;letter-spacing:.2px}
-    .role{margin:0 auto 15px;color:#eaf2ff;font-size:16px;line-height:1.5}
-    .services{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:16px 0 21px}
+    .avatar{display:block;width:116px;height:116px;object-fit:cover;border:4px solid #fff;border-radius:50%;background:#fff;margin:0 auto 15px;box-shadow:0 0 0 4px var(--orange)}
+    h1{font-size:clamp(27px,5vw,38px);margin:0 0 8px;letter-spacing:.2px}
+    .role{margin:0 auto 12px;color:#eaf2ff;font-size:16px;line-height:1.5}
+    .location{margin:0;color:#c8d7eb;font-size:14px}
+    .services{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:18px 0 21px}
     .services span{font-size:13px;border:1px solid #ffffff38;border-radius:999px;padding:7px 10px;background:#ffffff10}
-    .cta{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;max-width:350px;margin:0 auto;background:var(--orange);color:#111827;border-radius:13px;padding:14px 16px;font-weight:800;font-size:16px}
+    .cta{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;max-width:360px;margin:0 auto;background:var(--orange);color:#111827;border-radius:13px;padding:14px 16px;font-weight:800;font-size:16px}
     .hint{font-size:12px;color:#d6e4f8;margin:12px 0 0}
-    .section{margin-top:22px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:21px;box-shadow:0 8px 26px #123b6d0c}
-    .section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}
-    h2{font-size:21px;margin:0;color:var(--navy)}
-    .sub{margin:7px 0 16px;color:var(--muted);font-size:14px;line-height:1.55}
-    .button{display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;background:var(--blue);color:#fff;padding:11px 15px;border-radius:11px;font-weight:700;font-size:14px}
+    .quicklinks{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:16px 0 4px}
+    .quicklinks a{background:#fff;border:1px solid var(--line);border-radius:999px;padding:10px 14px;text-decoration:none;color:var(--navy);font-size:13px;font-weight:700}
+    .section{margin-top:20px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:21px;box-shadow:0 8px 26px #123b6d0c}
+    .section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:5px}
+    h2{font-size:22px;margin:0;color:var(--navy)}
+    h3{color:var(--navy)}
+    .sub{margin:7px 0 17px;color:var(--muted);font-size:14px;line-height:1.65}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .service-card,.price-card{border:1px solid var(--line);border-radius:15px;padding:16px;background:#fff}
+    .service-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:#edf3ff;font-size:22px;margin-bottom:11px}
+    .service-card h3,.price-card h3{font-size:16px;margin:0 0 7px}
+    .service-card p,.price-card p{font-size:13px;line-height:1.55;color:var(--muted);margin:0}
+    .price{font-size:17px;font-weight:800;color:var(--blue);margin:12px 0!important}
+    .button{display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;background:var(--blue);color:#fff;padding:11px 15px;border-radius:11px;font-weight:700;font-size:14px;border:0;cursor:pointer}
     .button.orange{background:var(--orange);color:#111827}
+    .button.green{background:var(--green);color:#fff}
+    .button.full{width:100%}
+    .portfolio-empty{background:#f7f9fc;border:1px dashed #cbd5e1;border-radius:15px;padding:22px;text-align:center}
+    .portfolio-empty .symbol{font-size:32px}
+    .portfolio-empty p{color:var(--muted);line-height:1.6;font-size:14px}
     .review{padding:15px 0;border-top:1px solid var(--line)}
     .review:first-child{border-top:0}
     .review-name{font-weight:800;color:var(--navy)}
     .stars{color:#f5a623;letter-spacing:2px;margin:5px 0}
-    .service{font-size:12px;color:var(--muted);margin-bottom:7px}
-    .message{margin:0;line-height:1.6;overflow-wrap:anywhere}
+    .service-label{font-size:12px;color:var(--muted);margin-bottom:7px}
+    .review-message{margin:0;line-height:1.6;overflow-wrap:anywhere}
     .muted{font-size:13px;color:var(--muted);line-height:1.6}
     .empty{background:#f7f9fc;border-radius:12px;padding:14px}
-    .links{display:flex;flex-wrap:wrap;gap:10px;margin-top:15px}
-    footer{text-align:center;color:var(--muted);font-size:12px;margin-top:20px}
-    @media(min-width:600px){.hero{padding:36px}.section{padding:25px}.avatar{width:126px;height:126px}}
+    .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .field{display:flex;flex-direction:column;gap:7px}
+    .field.full-row{grid-column:1/-1}
+    label{font-size:13px;font-weight:700;color:var(--navy)}
+    input,select,textarea{width:100%;border:1px solid #cbd5e1;border-radius:10px;padding:12px;font:inherit;font-size:15px;background:#fff;color:var(--ink)}
+    textarea{min-height:115px;resize:vertical}
+    input:focus,select:focus,textarea:focus{outline:3px solid #dbeafe;border-color:#2563eb}
+    #inquiryStatus{margin-top:12px;font-size:14px;line-height:1.5}
+    .status-error{color:#b42318}.status-ok{color:#067647}
+    .contact-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    footer{text-align:center;color:var(--muted);font-size:12px;margin-top:22px;line-height:1.7}
+    @media(max-width:520px){.grid,.form-grid,.contact-grid{grid-template-columns:1fr}.section{padding:17px}.hero{padding:28px 17px 22px}.avatar{width:104px;height:104px}.wrap{width:min(100% - 20px,900px)}}
   </style>
 </head>
 <body>
   <main class="wrap">
-    <div class="top"><span class="mark">&lt;/&gt;</span><span>RAKESH BARAIYA<br><small style="font-weight:500;letter-spacing:0">Application & Website Developer</small></span></div>
+    <div class="top"><span class="mark">&lt;/&gt;</span><span>RAKESH BARAIYA<br><small>Application &amp; Website Developer</small></span></div>
 
-    <a class="hero-link" id="whatsappCard" href="#" aria-label="WhatsApp પર Rakesh Baraiya ને મેસેજ કરો">
+    <a class="hero-link" id="whatsappCard" href="https://wa.me/917990138929" aria-label="WhatsApp પર Rakesh Baraiya ને મેસેજ કરો">
       <section class="hero">
         <img class="avatar" src="assets/logo.png" alt="Rakesh Baraiya" onerror="this.style.display='none'">
         <h1>RAKESH BARAIYA</h1>
-        <p class="role">Application & Website Developer</p>
+        <p class="role">Application &amp; Website Developer</p>
+        <p class="location">📍 Mahuva, Gujarat</p>
         <div class="services">
-          <span>📱 Mobile Apps</span><span>🌐 Websites</span><span>💻 Software</span><span>⭐ Feedback Forms</span>
+          <span>📱 Mobile Apps</span><span>🌐 Websites</span><span>💻 Business Software</span><span>🎨 UI/UX Design</span>
         </div>
         <div class="cta">☘ WhatsApp પર મેસેજ કરો</div>
         <p class="hint">કાર્ડ પર ક્લિક કરો — તમારો મેસેજ WhatsApp માં તૈયાર મળશે</p>
       </section>
     </a>
 
-    <section class="section">
-      <div class="section-head"><h2>ગ્રાહકોના Feedback ⭐</h2></div>
-      <p class="sub">અમારી સેવા લીધેલા ગ્રાહકોના રિવ્યૂ.</p>
-      <div id="reviews" aria-live="polite"><p class="muted">Feedback લોડ થઈ રહ્યા છે...</p></div>
-      <div class="links">
-        <a class="button orange" href="./feedback.html">✍️ Feedback આપો</a>
-        <a class="button" href="./feedback.html">બધા Feedback જુઓ</a>
+    <nav class="quicklinks" aria-label="Page sections">
+      <a href="#services">Services &amp; Pricing</a>
+      <a href="#portfolio">Portfolio</a>
+      <a href="#feedback">Customer Feedback</a>
+      <a href="#inquiry">Project Inquiry</a>
+    </nav>
+
+    <section class="section" id="services">
+      <div class="section-head"><h2>My Services</h2></div>
+      <p class="sub">તમારા બિઝનેસ અને જરૂરિયાત મુજબ કસ્ટમ ડિજિટલ સોલ્યુશન્સ.</p>
+      <div class="grid">
+        <article class="service-card"><div class="service-icon">🌐</div><h3>Website Development</h3><p>Business websites, portfolio websites અને custom web solutions.</p><p class="price">Starting from ₹…</p><a class="button" href="#inquiry" data-service="Website Development">Get a Quote</a></article>
+        <article class="service-card"><div class="service-icon">📱</div><h3>Mobile App Development</h3><p>તમારા કામ અને બિઝનેસ માટે જરૂરી mobile app solutions.</p><p class="price">Starting from ₹…</p><a class="button" href="#inquiry" data-service="Mobile App Development">Get a Quote</a></article>
+        <article class="service-card"><div class="service-icon">💻</div><h3>Business Software</h3><p>Customer management, records અને બિઝનેસ workflow માટે સિસ્ટમ.</p><p class="price">Starting from ₹…</p><a class="button" href="#inquiry" data-service="Business Software">Get a Quote</a></article>
+        <article class="service-card"><div class="service-icon">🎨</div><h3>UI/UX Design</h3><p>વેબસાઇટ અને એપ્લિકેશન માટે user-friendly interface design.</p><p class="price">Starting from ₹…</p><a class="button" href="#inquiry" data-service="UI/UX Design">Get a Quote</a></article>
+        <article class="service-card"><div class="service-icon">🗄️</div><h3>Database &amp; Integration</h3><p>Database setup, forms અને supported servicesનું integration.</p><p class="price">Starting from ₹…</p><a class="button" href="#inquiry" data-service="Database & Integration">Get a Quote</a></article>
+        <article class="service-card"><div class="service-icon">🧩</div><h3>Other Custom Projects</h3><p>તમારી જરૂરિયાત પ્રમાણે અન્ય digital project અથવા feature.</p><p class="price">Starting from ₹…</p><a class="button" href="#inquiry" data-service="Other Custom Projects">Get a Quote</a></article>
       </div>
     </section>
 
-    <footer>© RAKESH BARAIYA · Mahuva, Gujarat</footer>
+    <section class="section" id="portfolio">
+      <div class="section-head"><h2>My Portfolio</h2></div>
+      <p class="sub">Websites, Mobile Apps, Business Software, UI/UX Design અને અન્ય પ્રોજેક્ટ્સ.</p>
+      <div class="portfolio-empty">
+        <div class="symbol">🗂️</div>
+        <h3>Projects Showcase</h3>
+        <p>અહીં તમારા સાચા પ્રોજેક્ટ્સનાં નામ, સ્ક્રીનશૉટ, ટૂંકું વર્ણન અને ઉપલબ્ધ હોય તો Live Demo ઉમેરાશે. હજી પ્રોજેક્ટની વિગતો આપવામાં આવી નથી, તેથી બનાવટી પ્રોજેક્ટ્સ બતાવ્યા નથી.</p>
+        <a class="button orange" href="#inquiry">તમારો પ્રોજેક્ટ શરૂ કરો</a>
+      </div>
+    </section>
+
+    <section class="section" id="feedback">
+      <div class="section-head"><h2>ગ્રાહકોના Feedback ⭐</h2></div>
+      <p class="sub">અમારી સેવા લીધેલા ગ્રાહકોના રિવ્યૂ.</p>
+      <div id="reviews" aria-live="polite"><p class="muted">Feedback લોડ થઈ રહ્યા છે...</p></div>
+      <div class="quicklinks">
+        <a href="./feedback.html">✍️ Feedback આપો</a>
+        <a href="./feedback.html">બધા Feedback જુઓ</a>
+      </div>
+    </section>
+
+    <section class="section" id="inquiry">
+      <div class="section-head"><h2>Start Your Project</h2></div>
+      <p class="sub">તમારી જરૂરિયાત જણાવો. Inquiry Supabaseમાં મોકલાશે, ત્યારબાદ WhatsApp દ્વારા સંપર્ક કરવાનો વિકલ્પ પણ મળશે.</p>
+      <form id="inquiryForm">
+        <div class="form-grid">
+          <div class="field"><label for="inquiryName">તમારું નામ *</label><input id="inquiryName" name="name" maxlength="100" required autocomplete="name" placeholder="નામ લખો"></div>
+          <div class="field"><label for="inquiryMobile">મોબાઇલ નંબર *</label><input id="inquiryMobile" name="mobile" type="tel" maxlength="30" required autocomplete="tel" placeholder="મોબાઇલ નંબર"></div>
+          <div class="field"><label for="inquiryEmail">Gmail (વૈકલ્પિક)</label><input id="inquiryEmail" name="email" type="email" maxlength="254" autocomplete="email" placeholder="name@gmail.com"></div>
+          <div class="field"><label for="inquiryService">કઈ સર્વિસ જોઈએ? *</label><select id="inquiryService" name="service" required><option value="">સર્વિસ પસંદ કરો</option><option>Website Development</option><option>Mobile App Development</option><option>Business Software</option><option>UI/UX Design</option><option>Database &amp; Integration</option><option>Other Custom Projects</option></select></div>
+          <div class="field full-row"><label for="inquiryBudget">અંદાજિત બજેટ (વૈકલ્પિક)</label><select id="inquiryBudget" name="budget"><option value="">બજેટ પસંદ કરો (વૈકલ્પિક)</option><option>₹5,000થી ઓછું</option><option>₹5,000–₹15,000</option><option>₹15,000–₹50,000</option><option>₹50,000થી વધુ</option><option>હજુ નક્કી નથી</option></select></div>
+          <div class="field full-row"><label for="inquiryDetails">પ્રોજેક્ટની વિગતો *</label><textarea id="inquiryDetails" name="details" maxlength="3000" required placeholder="તમને કઈ વેબસાઇટ, એપ અથવા સોફ્ટવેર બનાવવું છે?"></textarea></div>
+          <div class="field full-row"><button class="button full" id="inquirySubmit" type="submit">Submit Inquiry</button></div>
+        </div>
+        <p id="inquiryStatus" role="status" aria-live="polite"></p>
+      </form>
+      <a class="button green full" id="inquiryWhatsApp" href="https://wa.me/917990138929" target="_blank" rel="noopener">WhatsApp પર સીધો સંપર્ક કરો</a>
+    </section>
+
+    <section class="section" id="contact">
+      <div class="section-head"><h2>Contact</h2></div>
+      <p class="sub">તમારા પ્રોજેક્ટ વિશે વાત કરવા માટે સંપર્ક કરો.</p>
+      <div class="contact-grid">
+        <a class="button green full" href="https://wa.me/917990138929" target="_blank" rel="noopener">WhatsApp</a>
+        <a class="button full" href="https://www.instagram.com/" target="_blank" rel="noopener">Instagram</a>
+      </div>
+    </section>
+
+    <footer>© <span id="year"></span> RAKESH BARAIYA · Mahuva, Gujarat<br><a href="./index.html">Dashboard</a> · <a href="./feedback.html">Customer Feedback</a></footer>
   </main>
 
   <script type="module">
-    const whatsappNumber = '917990138929';
-    const message = 'નમસ્તે 🙏 RAKESH BARAIYA હું મારા બિઝનેસ માટે એક website/app બનાવવા માગું છું';
-    document.getElementById('whatsappCard').href =
-      'https://wa.me/' + whatsappNumber + '?text=' + encodeURIComponent(message);
-
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+    const whatsappNumber = '917990138929';
+    const defaultMessage = 'નમસ્તે 🙏 RAKESH BARAIYA હું મારા બિઝનેસ માટે એક website/app બનાવવા માગું છું';
+    const whatsappUrl = message => 'https://wa.me/' + whatsappNumber + '?text=' + encodeURIComponent(message);
+
+    document.getElementById('whatsappCard').href = whatsappUrl(defaultMessage);
+    document.getElementById('inquiryWhatsApp').href = whatsappUrl(defaultMessage);
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    document.querySelectorAll('[data-service]').forEach(link => {
+      link.addEventListener('click', () => {
+        document.getElementById('inquiryService').value = link.dataset.service;
+      });
+    });
+
     const SUPABASE_URL = 'https://bgakkkbavdtcndylpwgd.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_fcs7MDIxJomgpkkuHLH1eg_Zt_UcHMh';
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-    const box = document.getElementById('reviews');
+    const reviewsBox = document.getElementById('reviews');
 
     function textEl(tag, cls, value) {
       const el = document.createElement(tag);
@@ -93,33 +190,82 @@
     }
 
     async function loadReviews() {
-      const { data, error } = await supabase
-        .from('feedback')
-        .select('name, service, rating, message, created_at')
-        .order('created_at', { ascending: false })
-        .limit(8);
+      try {
+        const { data, error } = await supabase
+          .from('feedback')
+          .select('name, service, rating, message, created_at')
+          .order('created_at', { ascending: false })
+          .limit(8);
 
-      box.replaceChildren();
-      if (error) {
-        box.append(textEl('p', 'muted empty', 'હાલમાં Feedback લોડ થઈ શક્યા નથી. કૃપા કરીને Feedback પેજ ખોલો.'));
+        reviewsBox.replaceChildren();
+        if (error) throw error;
+        if (!data || data.length === 0) {
+          reviewsBox.append(textEl('p', 'muted empty', 'હજુ કોઈ Feedback મળ્યો નથી.'));
+          return;
+        }
+
+        data.forEach(item => {
+          const review = document.createElement('article');
+          review.className = 'review';
+          const stars = Math.max(0, Math.min(5, Number(item.rating) || 0));
+          review.append(textEl('div', 'review-name', item.name));
+          review.append(textEl('div', 'stars', '★'.repeat(stars) + '☆'.repeat(5 - stars)));
+          review.append(textEl('div', 'service-label', 'સેવા: ' + (item.service || 'ઉલ્લેખ નથી')));
+          review.append(textEl('p', 'review-message', item.message));
+          reviewsBox.append(review);
+        });
+      } catch (error) {
+        reviewsBox.replaceChildren(textEl('p', 'muted empty', 'Feedback લોડ થઈ શક્યા નથી. બધા રિવ્યૂ જોવા Feedback પેજ ખોલો.'));
         console.error('Feedback load error:', error);
-        return;
       }
-      if (!data || data.length === 0) {
-        box.append(textEl('p', 'muted empty', 'હજુ કોઈ Feedback મળ્યો નથી. તમારો અનુભવ શેર કરનાર પ્રથમ ગ્રાહક બનો!'));
-        return;
-      }
-      data.forEach(item => {
-        const review = document.createElement('article');
-        review.className = 'review';
-        review.append(textEl('div', 'review-name', item.name));
-        review.append(textEl('div', 'stars', '★'.repeat(Math.max(0, Math.min(5, Number(item.rating) || 0)) ) + '☆'.repeat(5 - Math.max(0, Math.min(5, Number(item.rating) || 0)))));
-        review.append(textEl('div', 'service', 'સેવા: ' + (item.service || 'ઉલ્લેખ નથી')));
-        review.append(textEl('p', 'message', item.message));
-        box.append(review);
-      });
     }
     loadReviews();
+
+    const inquiryForm = document.getElementById('inquiryForm');
+    const inquiryStatus = document.getElementById('inquiryStatus');
+    const inquirySubmit = document.getElementById('inquirySubmit');
+
+    inquiryForm.addEventListener('submit', async event => {
+      event.preventDefault();
+      inquiryStatus.className = '';
+      inquiryStatus.textContent = '';
+
+      const name = document.getElementById('inquiryName').value.trim();
+      const mobile = document.getElementById('inquiryMobile').value.trim();
+      const email = document.getElementById('inquiryEmail').value.trim();
+      const service = document.getElementById('inquiryService').value;
+      const budget = document.getElementById('inquiryBudget').value;
+      const details = document.getElementById('inquiryDetails').value.trim();
+
+      if (!name || !mobile || !service || !details) {
+        inquiryStatus.className = 'status-error';
+        inquiryStatus.textContent = 'કૃપા કરીને નામ, મોબાઇલ, સર્વિસ અને પ્રોજેક્ટની વિગતો ભરો.';
+        return;
+      }
+
+      inquirySubmit.disabled = true;
+      inquirySubmit.textContent = 'મોકલાઈ રહ્યું છે...';
+
+      try {
+        const { error } = await supabase.from('project_inquiries').insert({
+          name, mobile, email: email || null, service, budget: budget || null, details
+        });
+        if (error) throw error;
+
+        inquiryStatus.className = 'status-ok';
+        inquiryStatus.textContent = 'તમારી Inquiry સફળતાપૂર્વક મોકલાઈ. આભાર! WhatsApp પર પણ મેસેજ મોકલી શકો છો.';
+        const whatsappMessage = 'નમસ્તે 🙏 RAKESH BARAIYA, મને તમારા કામ માટે Inquiry કરવી છે.\nનામ: ' + name + '\nમોબાઇલ: ' + mobile + '\nસર્વિસ: ' + service + '\nબજેટ: ' + (budget || 'હજુ નક્કી નથી') + '\nવિગતો: ' + details;
+        document.getElementById('inquiryWhatsApp').href = whatsappUrl(whatsappMessage);
+        inquiryForm.reset();
+      } catch (error) {
+        console.error('Inquiry submit error:', error);
+        inquiryStatus.className = 'status-error';
+        inquiryStatus.textContent = 'Inquiry મોકલી શકાઈ નથી. કૃપા કરીને WhatsApp દ્વારા સંપર્ક કરો.';
+      } finally {
+        inquirySubmit.disabled = false;
+        inquirySubmit.textContent = 'Submit Inquiry';
+      }
+    });
   </script>
 </body>
 </html>
