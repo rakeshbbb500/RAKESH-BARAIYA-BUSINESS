@@ -293,6 +293,12 @@ async function saveCustomer(event) {
   }
 
   try {
+    const { data: authData, error: authError } = await db.auth.getUser();
+    if (authError || !authData?.user) {
+      alert("Please log in again.");
+      return;
+    }
+
     let result;
 
     if (editingId) {
@@ -303,7 +309,7 @@ async function saveCustomer(event) {
     } else {
       result = await db
         .from("customers")
-        .insert(payload);
+        .insert({ ...payload, user_id: authData.user.id });
     }
 
     if (result.error) {
