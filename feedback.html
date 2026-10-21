@@ -249,10 +249,20 @@
 
           if (error) throw error;
 
-          statusEl.textContent =
-            'આભાર! તમારો Feedback સફળતાપૂર્વક સેવ થયો.';
-
           document.getElementById('feedbackForm').reset();
+          const container = document.querySelector('.container');
+          container.replaceChildren();
+          const thanks = document.createElement('section');
+          thanks.className = 'card';
+          const heading = document.createElement('h1');
+          heading.textContent = 'આભાર! 🙏';
+          const copy = document.createElement('p');
+          copy.textContent = 'તમારો Feedback સફળતાપૂર્વક સેવ થયો. RAKESH BARAIYA BUSINESS ને પસંદ કરવા બદલ આભાર.';
+          const back = document.createElement('a');
+          back.href = './index.html';
+          back.textContent = 'Dashboard પર પાછા જાઓ';
+          thanks.append(heading, copy, back);
+          container.appendChild(thanks);
           rating = 0;
 
           document.querySelectorAll('.star').forEach(star => {
