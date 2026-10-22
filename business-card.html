@@ -252,6 +252,16 @@
         });
         if (error) throw error;
 
+        // Email notification is best-effort: inquiry remains saved even if email fails.
+        try {
+          const { error: notifyError } = await supabase.functions.invoke('send-site-notification', {
+            body: { type: 'inquiry', name, mobile, email, service, budget, detail: details }
+          });
+          if (notifyError) console.error('Inquiry email notification failed:', notifyError);
+        } catch (notifyError) {
+          console.error('Inquiry email notification failed:', notifyError);
+        }
+
         inquiryStatus.className = 'status-ok';
         inquiryStatus.textContent = 'તમારી Inquiry સફળતાપૂર્વક મોકલાઈ. આભાર! WhatsApp પર પણ મેસેજ મોકલી શકો છો.';
         const whatsappMessage = 'નમસ્તે 🙏 RAKESH BARAIYA, મને તમારા કામ માટે Inquiry કરવી છે.\nનામ: ' + name + '\nમોબાઇલ: ' + mobile + '\nસર્વિસ: ' + service + '\nબજેટ: ' + (budget || 'હજુ નક્કી નથી') + '\nવિગતો: ' + details;
