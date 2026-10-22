@@ -180,7 +180,19 @@
     const SUPABASE_URL = 'https://bgakkkbavdtcndylpwgd.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_fcs7MDIxJomgpkkuHLH1eg_Zt_UcHMh';
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-    const reviewsBox = document.getElementById('reviews');
+
+    async function notificationErrorText(error) {
+      const parts = [error?.message || 'Unknown notification error'];
+      const response = error?.context;
+      if (response && typeof response.status === 'number') {
+        parts.push('HTTP ' + response.status);
+        try {
+          const body = await response.clone().text();
+          if (body) parts.push(body.slice(0, 700));
+        } catch (_) {}
+      }
+      return parts.join(' — ');
+    }    const reviewsBox = document.getElementById('reviews');
 
     function textEl(tag, cls, value) {
       const el = document.createElement(tag);
@@ -252,18 +264,27 @@
         });
         if (error) throw error;
 
-        // Email notification is best-effort: inquiry remains saved even if email fails.
+        // Keep the saved inquiry, but show notification failures clearly for debugging.
+        let notificationWarning = '';
         try {
-          const { error: notifyError } = await supabase.functions.invoke('send-site-notification', {
+          const { data: notifyData, error: notifyError } = await supabase.functions.invoke('send-site-notification', {
             body: { type: 'inquiry', name, mobile, email, service, budget, detail: details }
           });
-          if (notifyError) console.error('Inquiry email notification failed:', notifyError);
+          if (notifyError) {
+            notificationWarning = await notificationErrorText(notifyError);
+            console.error('Inquiry email notification failed:', notificationWarning, notifyError);
+          } else {
+            console.info('Inquiry email notification response:', notifyData);
+          }
         } catch (notifyError) {
-          console.error('Inquiry email notification failed:', notifyError);
+          notificationWarning = await notificationErrorText(notifyError);
+          console.error('Inquiry email notification failed:', notificationWarning, notifyError);
         }
 
-        inquiryStatus.className = 'status-ok';
-        inquiryStatus.textContent = 'તમારી Inquiry સફળતાપૂર્વક મોકલાઈ. આભાર! WhatsApp પર પણ મેસેજ મોકલી શકો છો.';
+        inquiryStatus.className = notificationWarning ? 'status-error' : 'status-ok';
+        inquiryStatus.textContent = notificationWarning
+          ? 'તમારી Inquiry ડેટાબેઝમાં સેવ થઈ છે, પરંતુ Email Notification નિષ્ફળ ગયું. વિગત: ' + notificationWarning
+          : 'તમારી Inquiry સફળતાપૂર્વક મોકલાઈ અને Email Notification Function એ વિનંતી સ્વીકારી. આભાર! WhatsApp પર પણ મેસેજ મોકલી શકો છો.';
         const whatsappMessage = 'નમસ્તે 🙏 RAKESH BARAIYA, મને તમારા કામ માટે Inquiry કરવી છે.\nનામ: ' + name + '\nમોબાઇલ: ' + mobile + '\nસર્વિસ: ' + service + '\nબજેટ: ' + (budget || 'હજુ નક્કી નથી') + '\nવિગતો: ' + details;
         document.getElementById('inquiryWhatsApp').href = whatsappUrl(whatsappMessage);
         inquiryForm.reset();
