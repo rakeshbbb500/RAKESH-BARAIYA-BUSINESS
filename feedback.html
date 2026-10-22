@@ -146,7 +146,19 @@
       'sb_publishable_fcs7MDIxJomgpkkuHLH1eg_Zt_UcHMh';
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-    let rating = 0;
+
+    async function notificationErrorText(error) {
+      const parts = [error?.message || 'Unknown notification error'];
+      const response = error?.context;
+      if (response && typeof response.status === 'number') {
+        parts.push('HTTP ' + response.status);
+        try {
+          const body = await response.clone().text();
+          if (body) parts.push(body.slice(0, 700));
+        } catch (_) {}
+      }
+      return parts.join(' — ');
+    }    let rating = 0;
 
     const statusEl = document.getElementById('status');
     const submitBtn = document.getElementById('submitBtn');
@@ -261,14 +273,21 @@
 
           if (error) throw error;
 
-          // Email notification is best-effort: feedback remains saved even if email fails.
+          // Feedback remains saved even if notification fails; expose the exact safe diagnostic.
+          let notificationWarning = '';
           try {
-            const { error: notifyError } = await supabase.functions.invoke('send-site-notification', {
+            const { data: notifyData, error: notifyError } = await supabase.functions.invoke('send-site-notification', {
               body: { type: 'feedback', name, service, rating, detail: message }
             });
-            if (notifyError) console.error('Feedback email notification failed:', notifyError);
+            if (notifyError) {
+              notificationWarning = await notificationErrorText(notifyError);
+              console.error('Feedback email notification failed:', notificationWarning, notifyError);
+            } else {
+              console.info('Feedback email notification response:', notifyData);
+            }
           } catch (notifyError) {
-            console.error('Feedback email notification failed:', notifyError);
+            notificationWarning = await notificationErrorText(notifyError);
+            console.error('Feedback email notification failed:', notificationWarning, notifyError);
           }
 
           document.getElementById('feedbackForm').reset();
@@ -283,7 +302,19 @@
           const back = document.createElement('a');
           back.href = './index.html';
           back.textContent = 'Dashboard પર પાછા જાઓ';
-          thanks.append(heading, copy, back);
+          thanks.append(heading, copy);
+          if (notificationWarning) {
+            const warning = document.createElement('p');
+            warning.style.cssText = 'margin:14px 0;padding:12px;border-radius:10px;background:#fff1f0;color:#b42318;overflow-wrap:anywhere;line-height:1.5';
+            warning.textContent = 'Feedback સેવ થયો છે, પરંતુ Email Notification નિષ્ફળ ગયું. વિગત: ' + notificationWarning;
+            thanks.appendChild(warning);
+          } else {
+            const note = document.createElement('p');
+            note.className = 'muted';
+            note.textContent = 'Email Notification Function એ વિનંતી સ્વીકારી.';
+            thanks.appendChild(note);
+          }
+          thanks.appendChild(back);
           container.appendChild(thanks);
           rating = 0;
 
