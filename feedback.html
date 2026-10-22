@@ -15,6 +15,10 @@
       color: #172033;
     }
     .container { max-width: 650px; margin: 0 auto; }
+    .brand-header { display:flex; align-items:center; justify-content:center; gap:13px; margin:0 auto 18px; padding:15px 18px; background:#071f3c; color:#fff; border-radius:16px; box-shadow:0 4px 18px #17203312; }
+    .brand-logo { width:62px; height:62px; object-fit:contain; border-radius:12px; background:#fff; padding:4px; flex-shrink:0; }
+    .brand-name { margin:0; color:#fff; font-size:19px; letter-spacing:.4px; }
+    .brand-tagline { margin:5px 0 0; color:#dbeafe; font-size:13px; line-height:1.4; }
     .card {
       background: white;
       padding: 22px;
@@ -74,6 +78,14 @@
 </head>
 <body>
   <main class="container">
+    <header class="brand-header">
+      <img class="brand-logo" src="./assets/logo.png" alt="RAKESH BARAIYA Logo"
+        onerror="this.onerror=null;this.src='./logo.png';">
+      <div>
+        <p class="brand-name"><strong>RAKESH BARAIYA</strong></p>
+        <p class="brand-tagline">Application &amp; Website Developer</p>
+      </div>
+    </header>
     <section class="card">
       <h1>Customer Feedback</h1>
       <p>તમારો અનુભવ અમારી સાથે શેર કરો.</p>
