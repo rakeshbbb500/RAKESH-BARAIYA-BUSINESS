@@ -261,6 +261,16 @@
 
           if (error) throw error;
 
+          // Email notification is best-effort: feedback remains saved even if email fails.
+          try {
+            const { error: notifyError } = await supabase.functions.invoke('send-site-notification', {
+              body: { type: 'feedback', name, service, rating, detail: message }
+            });
+            if (notifyError) console.error('Feedback email notification failed:', notifyError);
+          } catch (notifyError) {
+            console.error('Feedback email notification failed:', notifyError);
+          }
+
           document.getElementById('feedbackForm').reset();
           const container = document.querySelector('.container');
           container.replaceChildren();
